@@ -14,27 +14,33 @@ docker compose --profile optional up -d pgadmin minio flower
 ```
 
 ## Переменные окружения
-- `DATABASE_URL=postgresql+psycopg2://fanfiq:fanfiq@localhost:54390/fanfiq`
+- `DATABASE_URL=postgresql+psycopg://fanfiq:fanfiq@localhost:54390/fanfiq`
+- `REDIS_URL=redis://localhost:63790/0`
 
 ## Бэкенд (API)
 - Запуск (локально):
 ```bash
 pip install -r backend/api/requirements.txt
-uvicorn backend.api.app.main:app --reload --port 80890
+uvicorn backend.api.app.main:app --host 127.0.0.1 --port 58090 --reload
 ```
 - Миграции Alembic:
 ```bash
-export DATABASE_URL=postgresql+psycopg2://fanfiq:fanfiq@localhost:54390/fanfiq
+export DATABASE_URL=postgresql+psycopg://fanfiq:fanfiq@localhost:54390/fanfiq
 alembic -c backend/api/alembic.ini upgrade head
 ```
-- Эндпоинты:
-  - `GET /health`
-  - `POST /api/v1/works/search` (заглушка совместима с фронтом)
-- Следующие задачи:
-  - FTS-конструктор (pg_trgm + unaccent), индексы GIN (выражения) и сортировки.
-  - Redis-кэш (ключ = фильтры + сорт), TTL, инвалидация при апдейтах.
-  - Celery + RabbitMQ (очереди `crawl.{site}`, `normalize.input`).
-  - `normalizer` и `parser-ficbook`.
+
+## Деплой на Railway (контейнер)
+1. Включите Railway (Dashboard → New Project → Deploy from GitHub → выберите репозиторий `Kabalod/Fanfiq`).
+2. В настройках сервиса укажите:
+   - Build: Dockerfile → `backend/api/Dockerfile`
+   - Variables:
+     - `DATABASE_URL` — строка подключения к управляемой PostgreSQL Railway (или внешней)
+     - `REDIS_URL` — строка подключения к управляемому Redis Railway (или внешнему)
+     - `SEARCH_CACHE_TTL` — по желанию (секунды)
+   - Start command не нужен (задан в Dockerfile). PORT предоставляется Railway.
+3. Сначала создайте базы в Railway: Add Plugin → PostgreSQL, Redis. Скопируйте URL‑ы в переменные.
+4. Деплой: после билда контейнер выполнит миграции и поднимет API (`/api/v1/works/search`).
+5. Проверка: откройте публичный URL Railway и вызовите `GET /health`.
 
 ## Фронтенд
 - Состав: Next.js + TS, Tailwind, shadcn/ui, Storybook, MSW.
@@ -138,3 +144,25 @@ alembic upgrade head
 - Обновлённый `docker-compose.yml`, шаблоны Dockerfile под сервисы.
 Критерии приёмки:
 - `docker compose --profile app up -d` поднимает весь пайплайн; `health` сервисов зелёный.
+
+## CI/CD (GitHub Actions)
+- CI: `.github/workflows/ci.yml` — установка зависимостей, проверка импорта Alembic, сборка Docker API.
+- CD: `.github/workflows/deploy-railway.yml` — деплой API в Railway через Railway CLI.
+
+### Настройка секретов GitHub
+- `RAILWAY_TOKEN` — персональный или сервисный токен Railway (railway login → railway tokens create).
+- `RAILWAY_PROJECT_ID` — ID проекта Railway (railway project list).
+- `RAILWAY_SERVICE_ID` — ID сервиса API (создаётся при первом деплое/линковке; можно получить `railway service`).
+
+### Локальный Railway CLI (по желанию)
+```bash
+npm i -g @railway/cli
+railway login --token <RAILWAY_TOKEN>
+railway link --project <PROJECT_ID> --service <SERVICE_ID>
+railway up --from-path backend/api
+```
+
+### Переменные окружения в Railway
+- `DATABASE_URL` — строка подключения PostgreSQL (Plugin → Variables → Connection URL).
+- `REDIS_URL` — строка Redis (Private URL).
+- `SEARCH_CACHE_TTL` — опционально (секунды).
