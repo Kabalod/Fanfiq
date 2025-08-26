@@ -1,13 +1,23 @@
-import requests
+import os
+import time
 from backend.workers.celery_app import app
 from backend.workers.normalizer.worker import upsert_work
-from backend.parsers.ficbook import parse_ficbook_html, get_session
+from backend.parsers.ficbook import parse_ficbook_html, get_session, fetch_html
 
+_last_run = 0.0
 
 @app.task(name="crawl.ficbook")
 def crawl_ficbook(url: str):
+    global _last_run
+    rate_ms = int(os.getenv("CRAWL_RATE", "0"))
+    now = time.time()
+    if rate_ms > 0 and _last_run > 0:
+        gap = (rate_ms / 1000.0) - (now - _last_run)
+        if gap > 0:
+            time.sleep(gap)
+    _last_run = time.time()
+
     s = get_session()
-    resp = s.get(url, timeout=30)
-    resp.raise_for_status()
-    payload = parse_ficbook_html(resp.text, url)
+    html = fetch_html(s, url)
+    payload = parse_ficbook_html(html, url)
     return upsert_work.delay(payload).id

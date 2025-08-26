@@ -1,11 +1,31 @@
 import argparse
 import sys
 import json
+from pathlib import Path
 from typing import Optional
 from celery.result import AsyncResult
 from backend.workers.celery_app import app
 from backend.workers.ficbook.worker import crawl_ficbook
 from backend.parsers.ficbook import get_session, parse_ficbook_html
+
+
+def write_out(data: dict, out: Optional[str], fmt: str) -> None:
+    text = json.dumps(data, ensure_ascii=False)
+    if fmt == "ndjson":
+        # если chapters есть — построчно
+        chapters = data.get("chapters") or []
+        if chapters:
+            for ch in chapters:
+                line = json.dumps({**data, "chapters": [ch]}, ensure_ascii=False)
+                if out:
+                    Path(out).write_text(line + "\n", encoding="utf-8")
+                else:
+                    print(line)
+            return
+    if out:
+        Path(out).write_text(text, encoding="utf-8")
+    else:
+        print(text)
 
 
 def run_enqueue(site: str, url: str, wait: Optional[int]) -> int:
@@ -28,7 +48,7 @@ def run_enqueue(site: str, url: str, wait: Optional[int]) -> int:
         return 3
 
 
-def run_parse(site: str, url: str) -> int:
+def run_parse(site: str, url: str, out: Optional[str], fmt: str) -> int:
     site = site.lower()
     if site != "ficbook":
         print("Only 'ficbook' is supported in MVP", file=sys.stderr)
@@ -37,7 +57,7 @@ def run_parse(site: str, url: str) -> int:
     resp = s.get(url)
     resp.raise_for_status()
     payload = parse_ficbook_html(resp.text, url)
-    print(json.dumps(payload, ensure_ascii=False))
+    write_out(payload, out, fmt)
     return 0
 
 
@@ -53,11 +73,13 @@ def main():
     p_parse = sub.add_parser("parse", help="parse URL locally and print JSON")
     p_parse.add_argument("--site", default="ficbook")
     p_parse.add_argument("--url", required=True)
+    p_parse.add_argument("--out", default=None)
+    p_parse.add_argument("--format", choices=["json", "ndjson"], default="json")
 
     args = p.parse_args()
     cmd = args.cmd or "enqueue"
     if cmd == "parse":
-        raise SystemExit(run_parse(args.site, args.url))
+        raise SystemExit(run_parse(args.site, args.url, args.out, args.format))
     else:
         raise SystemExit(run_enqueue(args.site, args.url, args.wait))
 

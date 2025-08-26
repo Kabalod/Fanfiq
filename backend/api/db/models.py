@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, Index
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, Index, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 
@@ -22,6 +22,9 @@ class Author(Base):
 
 class Work(Base):
     __tablename__ = "works"
+    __table_args__ = (
+        UniqueConstraint("site_id", "site_work_id", name="uq_works_site_sitework"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     site_work_id: Mapped[str | None] = mapped_column(String(100), index=True)

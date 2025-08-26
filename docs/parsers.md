@@ -62,3 +62,25 @@ python backend/cli/crawl.py enqueue --site ficbook --url "https://ficbook.net/re
 set FICBOOK_COOKIE=PHPSESSID=...; other=...;
 ```
 - Дополнительно: `SCRAPER_UA` (User-Agent), `SCRAPER_TIMEOUT` (секунды).
+
+## Ficbook — примечания
+- Авторизация: `FICBOOK_COOKIE` (см. docstring в `backend/parsers/ficbook.py`).
+- Ретраи/таймаут: `SCRAPER_TIMEOUT`, `SCRAPER_RETRY`, `SCRAPER_BACKOFF_MS`.
+- Очистка HTML: удаляются `script/style/iframe`.
+
+## Валидация результата
+- Схема Pydantic: `backend/parsers/schemas.py` (`ParsedWork`, `Chapter`). Все парсеры должны возвращать dict, прошедший валидацию.
+
+## Ограничение скорости
+- Переменная `CRAWL_RATE` (миллисекунды между задачами) применяется в воркере `backend/workers/ficbook/worker.py`.
+
+## CLI
+- Локально:
+```bash
+python backend/cli/crawl.py parse --site ficbook --url "…" --out out.json --format json
+python backend/cli/crawl.py parse --site ficbook --url "…" --format ndjson > out.ndjson
+```
+- Очередь Celery:
+```bash
+python backend/cli/crawl.py enqueue --site ficbook --url "…" --wait 60
+```

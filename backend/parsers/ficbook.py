@@ -1,8 +1,18 @@
+"""
+Парсер Ficbook (readfic)
+- Извлекает: заголовок, автора, summary, рейтинг, статус, кол-во слов, дату обновления,
+  фандомы, теги, предупреждения, главы (HTML очищен от script/style/iframe).
+- Авторизация: переменная окружения FICBOOK_COOKIE (полный Cookie заголовок с PHPSESSID и др.).
+- Настройки: SCRAPER_UA (User-Agent), SCRAPER_TIMEOUT (сек), SCRAPER_RETRY (число попыток),
+  SCRAPER_BACKOFF_MS (задержка между попытками, мс).
+"""
 from bs4 import BeautifulSoup
 from typing import Dict, Any, List
 import os
 import re
+import time
 import requests
+from backend.parsers.schemas import ParsedWork
 
 
 def extract_text(el):
@@ -24,13 +34,29 @@ def get_session() -> requests.Session:
     cookie = os.getenv("FICBOOK_COOKIE")
     if cookie:
         s.headers.update({"Cookie": cookie})
-    timeout = int(os.getenv("SCRAPER_TIMEOUT", "30"))
-    s.request = lambda *a, **kw: requests.Session.request(s, *a, timeout=timeout, **kw)  # type: ignore
     return s
 
 
+def fetch_html(session: requests.Session, url: str) -> str:
+    timeout = int(os.getenv("SCRAPER_TIMEOUT", "30"))
+    retries = int(os.getenv("SCRAPER_RETRY", "3"))
+    backoff_ms = int(os.getenv("SCRAPER_BACKOFF_MS", "500"))
+    last_err = None
+    for i in range(retries):
+        try:
+            resp = session.get(url, timeout=timeout)
+            resp.raise_for_status()
+            return resp.text
+        except Exception as e:
+            last_err = e
+            if i < retries - 1:
+                time.sleep(backoff_ms / 1000)
+            else:
+                raise
+    raise last_err  # type: ignore
+
+
 def parse_meta_dd(soup: BeautifulSoup, label: str) -> str:
-    # ищем dt с нужным текстом, берём следующий dd
     for dt in soup.select("dt"):
         if label.lower() in extract_text(dt).lower():
             dd = dt.find_next_sibling("dd")
@@ -56,7 +82,6 @@ def parse_ficbook_html(html: str, url: str) -> Dict[str, Any]:
 
     updated_at = parse_meta_dd(soup, "Обновлено")
 
-    # фандомы/теги/предупреждения
     fandoms: List[str] = []
     for a in soup.select(".tags a[data-entity='fandom'], a[href*='/fanfiction']"):
         txt = extract_text(a)
@@ -74,7 +99,6 @@ def parse_ficbook_html(html: str, url: str) -> Dict[str, Any]:
     if warn_text:
         warnings = [w.strip() for w in re.split(r",|/|;", warn_text) if w.strip()]
 
-    # главы
     chapters = []
     for i, part in enumerate(soup.select("div.part"), start=1):
         ch_title = extract_text(part.select_one("h3.part-title")) or f"Глава {i}"
@@ -104,4 +128,5 @@ def parse_ficbook_html(html: str, url: str) -> Dict[str, Any]:
         "warnings": warnings,
         "chapters": chapters,
     }
-    return payload
+    # строгая валидация схемы
+    return ParsedWork(**payload).model_dump()
