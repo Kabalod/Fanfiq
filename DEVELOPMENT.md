@@ -166,3 +166,48 @@ railway up --from-path backend/api
 - `DATABASE_URL` — строка подключения PostgreSQL (Plugin → Variables → Connection URL).
 - `REDIS_URL` — строка Redis (Private URL).
 - `SEARCH_CACHE_TTL` — опционально (секунды).
+
+## Очереди и воркеры (Celery + Redis broker)
+- Конфигурация: `backend/workers/celery_app.py` (берёт `CELERY_BROKER_URL` или `REDIS_URL`).
+- Нормализатор: `backend/workers/normalizer/worker.py` — задача `normalize.upsert_work(payload)`.
+- Парсер Ficbook (MVP): `backend/workers/parser_ficbook/worker.py` — задача `crawl.ficbook(url)`.
+
+### Запуск (локально)
+```bash
+# Redis уже запущен docker compose up -d redis
+set REDIS_URL=redis://localhost:63790/0
+# один воркер с двумя очередями
+celery -A backend.workers.celery_app:app worker -Q crawl,normalize -l info
+```
+
+### Тест задач (в другом терминале Python)
+```python
+from backend.workers.parser_ficbook.worker import crawl_ficbook
+crawl_ficbook.delay("https://example.com/fic").id
+```
+
+### Переменные окружения
+- CELERY_BROKER_URL (если отличается от REDIS_URL)
+- CELERY_RESULT_BACKEND (опционально)
+
+## CLI утилиты
+- Парсинг локально (stdout JSON):
+```bash
+python backend/cli/crawl.py parse --site ficbook --url "https://ficbook.net/readfic/..."
+```
+- Постановка задачи (Celery) и ожидание результата:
+```bash
+python backend/cli/crawl.py enqueue --site ficbook --url "https://ficbook.net/readfic/..." --wait 60
+```
+- Экспорт из БД:
+```bash
+python backend/cli/export.py --id 1            # JSON с главами
+python backend/cli/export.py --id 1 --ndjson   # NDJSON построчно по главам
+```
+
+### Переменные окружения
+- `FICBOOK_COOKIE` — cookie для приватных страниц.
+- `SCRAPER_UA` — User-Agent (опц.).
+- `SCRAPER_TIMEOUT` — таймаут запросов (сек.).
+- `REDIS_URL` — брокер для Celery.
+- `DATABASE_URL` — строка подключения Postgres.
