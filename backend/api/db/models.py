@@ -1,0 +1,93 @@
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, Index
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from .base import Base
+
+
+class Site(Base):
+    __tablename__ = "sites"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+
+
+class Author(Base):
+    __tablename__ = "authors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(200), index=True)
+    url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    site_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("sites.id", ondelete="SET NULL"))
+
+
+class Work(Base):
+    __tablename__ = "works"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    site_work_id: Mapped[str | None] = mapped_column(String(100), index=True)
+    site_id: Mapped[int] = mapped_column(Integer, ForeignKey("sites.id"), index=True)
+    title: Mapped[str] = mapped_column(String(500), index=True)
+    summary: Mapped[str] = mapped_column(Text)
+    language: Mapped[str] = mapped_column(String(10), index=True)
+    rating: Mapped[str] = mapped_column(String(50), index=True)
+    category: Mapped[str | None] = mapped_column(String(50))
+    status: Mapped[str] = mapped_column(String(50), index=True)
+    word_count: Mapped[int] = mapped_column(Integer, index=True)
+    likes_count: Mapped[int | None] = mapped_column(Integer)
+    comments_count: Mapped[int | None] = mapped_column(Integer)
+    published_at: Mapped[str | None] = mapped_column(String(20))
+    updated_at: Mapped[str | None] = mapped_column(String(20), index=True)
+    original_url: Mapped[str | None] = mapped_column(String(500))
+    author_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("authors.id"))
+
+    chapters: Mapped[list["Chapter"]] = relationship("Chapter", back_populates="work", cascade="all, delete-orphan")
+    fandoms: Mapped[list["WorkFandom"]] = relationship("WorkFandom", back_populates="work", cascade="all, delete-orphan")
+    tags: Mapped[list["WorkTag"]] = relationship("WorkTag", back_populates="work", cascade="all, delete-orphan")
+    warnings: Mapped[list["WorkWarning"]] = relationship("WorkWarning", back_populates="work", cascade="all, delete-orphan")
+
+
+class Chapter(Base):
+    __tablename__ = "chapters"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    chapter_number: Mapped[int] = mapped_column(Integer)
+    title: Mapped[str | None] = mapped_column(String(500))
+    content_html: Mapped[str] = mapped_column(Text)
+
+    work: Mapped[Work] = relationship("Work", back_populates="chapters")
+
+
+class WorkFandom(Base):
+    __tablename__ = "work_fandoms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    fandom: Mapped[str] = mapped_column(String(200), index=True)
+
+    work: Mapped[Work] = relationship("Work", back_populates="fandoms")
+
+
+class WorkTag(Base):
+    __tablename__ = "work_tags"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    tag: Mapped[str] = mapped_column(String(200), index=True)
+
+    work: Mapped[Work] = relationship("Work", back_populates="tags")
+
+
+class WorkWarning(Base):
+    __tablename__ = "work_warnings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    work_id: Mapped[int] = mapped_column(Integer, ForeignKey("works.id", ondelete="CASCADE"), index=True)
+    warning: Mapped[str] = mapped_column(String(200), index=True)
+
+    work: Mapped[Work] = relationship("Work", back_populates="warnings")
+
+
+# Индексы для ускорения поиска/сортировок
+Index("idx_works_title_trgm", Work.title)
+Index("idx_works_summary_trgm", Work.summary)

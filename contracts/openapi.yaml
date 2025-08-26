@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Fanfiq API
+  version: 0.1.0
+  description: API для поиска и чтения фанфиков (MVP)
+paths:
+  /api/v1/works/search:
+    post:
+      summary: Поиск работ
+      operationId: searchWorks
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchFilters'
+      responses:
+        '200':
+          description: Успешный ответ с результатами
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+components:
+  schemas:
+    Work:
+      type: object
+      properties:
+        id: { type: string }
+        original_url: { type: string, format: uri }
+        title: { type: string }
+        author_name: { type: string }
+        author_url: { type: string, format: uri }
+        summary: { type: string }
+        language: { type: string }
+        fandoms:
+          type: array
+          items: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        rating: { type: string }
+        category: { type: string, nullable: true }
+        status: { type: string }
+        warnings:
+          type: array
+          items: { type: string }
+        word_count: { type: integer }
+        likes_count: { type: integer, nullable: true }
+        comments_count: { type: integer, nullable: true }
+        published_at: { type: string, nullable: true }
+        updated_at: { type: string, nullable: true }
+      required: [id, title, author_name, summary, language, fandoms, tags, rating, status, word_count]
+
+    SearchFilters:
+      type: object
+      properties:
+        source_sites:
+          type: array
+          items: { type: string }
+        query: { type: string }
+        language: { type: string }
+        fandom:
+          type: array
+          items: { type: string }
+        include_tags:
+          type: array
+          items: { type: string }
+        exclude_tags:
+          type: array
+          items: { type: string }
+        rating: { type: string }
+        status: { type: string }
+        category: { type: string }
+        warnings:
+          type: array
+          items: { type: string }
+        word_count_min: { type: integer }
+        word_count_max: { type: integer }
+        likes_min: { type: integer }
+        comments_min: { type: integer }
+        date_updated_after: { type: string }
+        date_updated_before: { type: string }
+        page: { type: integer }
+        page_size: { type: integer }
+        sort: { type: string, enum: [relevance, updated_desc, popularity_desc, words_desc, words_asc] }
+
+    SearchResponse:
+      type: object
+      properties:
+        total_pages: { type: integer }
+        current_page: { type: integer }
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Work'
+      required: [total_pages, current_page, results]
