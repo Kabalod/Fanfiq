@@ -1,17 +1,23 @@
 [build]
-builder = "nixpacks"
+# This tells Railway to use Docker to build the services.
+builder = "docker"
 
 [[services]]
 name = "api"
-rootDirectory = "backend/api"
-startCommand = "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+# We point to the specific Dockerfile for the backend.
+dockerfilePath = "./Dockerfile.backend"
+# The command is executed inside the Docker container.
+startCommand = "alembic -c api/alembic.ini upgrade head && uvicorn api.app.main:app --host 0.0.0.0 --port $PORT"
 
 [[services]]
 name = "frontend"
+# Railway will find and use the Dockerfile inside the `frontend` directory.
 rootDirectory = "frontend"
 startCommand = "npm run start"
 
 [[services]]
 name = "worker"
-rootDirectory = "backend"
+# We reuse the same backend Dockerfile.
+dockerfilePath = "./Dockerfile.backend"
+# But we run a different command for the worker.
 startCommand = "celery -A workers.celery_app:app worker -Q crawl,normalize -l info"
