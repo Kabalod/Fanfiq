@@ -6,22 +6,10 @@ WORKDIR /app
 ENV PYTHONPATH="/app"
 
 # 3. Install System Dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
 
-# 4. Install Python Dependencies
-# Copy requirements first to leverage Docker cache
-COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 4. Copy all necessary source code and requirements
+COPY . /app
 
-# 5. Copy Shared and Service-Specific Code
-# The build context is the `backend` directory.
-# This structure ensures all relative imports work correctly.
-COPY ./api /app/api
-COPY ./workers /app/workers
-COPY ./parsers /app/parsers
-COPY ./cli /app/cli
-
-# The start command is specified in Railway's deploy settings.
+# 5. Install Python Dependencies
+RUN pip install --no-cache-dir -r /app/api/requirements.txt

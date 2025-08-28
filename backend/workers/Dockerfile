@@ -6,21 +6,12 @@ WORKDIR /app
 ENV PYTHONPATH="/app"
 
 # 3. Install System Dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
 
-# 4. Install Python Dependencies
-# We use the same requirements.txt as the api for simplicity
-COPY ../api/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 4. Copy all necessary source code and requirements
+# The build context for this Dockerfile is the `backend` directory.
+COPY . /app
 
-# 5. Copy Shared and Service-Specific Code
-# The build context is the `backend` directory.
-COPY ./api /app/api
-COPY ./workers /app/workers
-COPY ./parsers /app/parsers
-COPY ./cli /app/cli
-
-# The start command is specified in Railway's deploy settings.
+# 5. Install Python Dependencies
+# We use the same requirements file as the API.
+RUN pip install --no-cache-dir -r /app/api/requirements.txt
