@@ -162,6 +162,47 @@ railway link --project <PROJECT_ID> --service <SERVICE_ID>
 railway up --from-path backend/api
 ```
 
+### Railway — деплой
+
+#### Автоматический деплой (рекомендуется)
+1. Форкните репозиторий или используйте свой
+2. В Railway создайте новый проект из GitHub репозитория
+3. Railway автоматически обнаружит `railway.toml` и создаст:
+   - PostgreSQL база данных
+   - Redis для кэша и очередей
+   - API сервис (FastAPI)
+   - Frontend сервис (Next.js)
+   - Worker сервис (Celery)
+
+#### Ручной деплой
+1. Создайте проект в Railway
+2. Добавьте сервисы из маркетплейса:
+   - PostgreSQL
+   - Redis
+3. Добавьте сервисы из GitHub:
+   - **API**: путь `backend/api`, старт команда:
+     ```bash
+     alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+     ```
+   - **Frontend**: путь `frontend`, старт команда:
+     ```bash
+     npm run start
+     ```
+   - **Worker**: путь `backend`, старт команда:
+     ```bash
+     celery -A workers.celery_app:app worker -Q crawl,normalize -l info
+     ```
+4. Настройте переменные окружения:
+   - API:
+     - `DATABASE_URL` → ссылка на PostgreSQL
+     - `REDIS_URL` → ссылка на Redis
+   - Frontend:
+     - `NEXT_PUBLIC_API_URL` → публичный URL API сервиса
+   - Worker:
+     - `DATABASE_URL` → ссылка на PostgreSQL
+     - `REDIS_URL` → ссылка на Redis
+5. Добавьте публичные домены для API и Frontend
+
 ### Переменные окружения в Railway
 - `DATABASE_URL` — строка подключения PostgreSQL (Plugin → Variables → Connection URL).
 - `REDIS_URL` — строка Redis (Private URL).
