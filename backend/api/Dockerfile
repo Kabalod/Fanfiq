@@ -9,7 +9,10 @@ ENV PYTHONPATH="/app"
 RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
 
 # 4. Copy all necessary source code and requirements
-COPY . /app
+COPY ./backend /app/backend
 
 # 5. Install Python Dependencies
-RUN pip install --no-cache-dir -r /app/api/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt
+
+# 6. Set the final working directory for the start command
+WORKDIR /app/backend

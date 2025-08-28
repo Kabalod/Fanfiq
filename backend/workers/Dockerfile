@@ -9,9 +9,10 @@ ENV PYTHONPATH="/app"
 RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
 
 # 4. Copy all necessary source code and requirements
-# The build context for this Dockerfile is the `backend` directory.
-COPY . /app
+COPY ./backend /app/backend
 
 # 5. Install Python Dependencies
-# We use the same requirements file as the API.
-RUN pip install --no-cache-dir -r /app/api/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt
+
+# 6. Set the final working directory for the start command
+WORKDIR /app/backend
