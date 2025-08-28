@@ -5,7 +5,7 @@ from .models import SearchFilters, SearchResponse, Work
 from ..db.session import SessionLocal
 from .search import execute_search
 from .cache import make_search_cache_key, cache_get, cache_set
-from backend.workers.ficbook.worker import crawl_ficbook
+from workers.ficbook.worker import crawl_ficbook
 import json
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
