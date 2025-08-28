@@ -14,11 +14,11 @@
    ```
 2. Поднимите базовую инфраструктуру:
    ```bash
-   docker compose up -d postgres redis rabbitmq
+   docker compose -f infra/docker-compose.yml up -d
    ```
 3. (Опционально) инструменты:
    ```bash
-   docker compose --profile optional up -d pgadmin minio flower
+   docker compose -f infra/docker-compose.yml --profile optional up -d pgadmin minio flower
    ```
 4. Проверка:
    - PostgreSQL: localhost:${POSTGRES_PORT_HOST:-54390}
@@ -157,7 +157,7 @@
 ### Локальная разработка
 ```bash
 # Запуск бэкенда
-docker compose up -d postgres redis
+docker compose -f infra/docker-compose.yml up -d postgres redis
 cd backend/api && uvicorn app.main:app --reload --port 58090
 
 # Запуск фронтенда

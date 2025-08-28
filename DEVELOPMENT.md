@@ -8,9 +8,9 @@
 ```bash
 cp env/.env.example .env
 # база
-docker compose up -d postgres redis rabbitmq
+docker compose -f infra/docker-compose.yml up -d postgres redis
 # инструменты (опц.)
-docker compose --profile optional up -d pgadmin minio flower
+docker compose -f infra/docker-compose.yml --profile optional up -d pgadmin minio flower
 ```
 
 ## Переменные окружения
