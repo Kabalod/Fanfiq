@@ -9,8 +9,8 @@ app = Celery(
     broker=BROKER_URL,
     backend=BACKEND_URL,
     include=[
-        "backend.workers.normalizer.worker",
-        "backend.workers.ficbook.worker",
+        "workers.normalizer.worker",
+        "workers.ficbook.worker",
     ],
 )
 
