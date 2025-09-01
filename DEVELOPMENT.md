@@ -71,7 +71,7 @@ alembic -c backend/api/alembic.ini upgrade head
   - `normalizer` (мэппинг полей, дедуп, upsert).
   - Первый парсер `ficbook`.
 - ✅ Этап 3 — Фронтенд MVP (с читалкой и расширенными фильтрами).
-- ✅ Этап 4 — Парсер Author.Today (готов к тестированию).
+- ✅ Этап 4 — Парсер Author.Today (полностью протестирован).
 - ⏳ Этап 5 — Новые парсеры (Litnet, Fanfics.me).
 - ⏳ Этап 6 — Наблюдаемость и CI.
 
@@ -136,7 +136,7 @@ alembic upgrade head
 Критерии приёмки:
 - Демо-страница результатов показывает загрузку, пустое состояние, списки, навигацию, и открытие `ReaderShell`.
 
-### Агент Парсер — Author.Today (Этап 4) ✅ ГОТОВО
+### Агент Парсер — Author.Today (Этап 4) ✅ ГОТОВО И ПРОТЕСТИРОВАН
 Контекст:
 - Author.Today — самая популярная русская платформа фанфиков
 - Схема парсера аналогична Ficbook (`backend/parsers/schemas.py`)
@@ -148,12 +148,16 @@ alembic upgrade head
 - Добавить селекторы для всех полей (заголовок, автор, описание, рейтинг, статус, слова, дата, фандомы, теги, предупреждения, главы)
 - Интегрировать с существующей архитектурой (Celery, нормализатор)
 Артефакты:
-- `backend/parsers/authortoday.py` — основной парсер
+- `backend/parsers/authortoday.py` — основной парсер с продвинутыми селекторами
 - `backend/workers/authortoday/` — Celery воркер
+- `backend/test_authortoday.py` — комплексный тест с моковыми и реальными данными
 - Обновлённые CLI и конфигурация
 Критерии приёмки:
-- Локальный парсинг: `python backend/cli/crawl.py parse --site authortoday --url "https://author.today/work/..."` возвращает валидный JSON
-- Celery воркер: `python backend/cli/crawl.py enqueue --site authortoday --url "..." --wait 60` успешно парсит и сохраняет в БД
+- ✅ Локальный парсинг: `python backend/cli/crawl.py parse --site authortoday --url "https://author.today/work/..."` возвращает валидный JSON
+- ✅ Celery воркер: `python backend/cli/crawl.py enqueue --site authortoday --url "..." --wait 60` успешно парсит и сохраняет в БД
+- ✅ Тестирование на реальных данных: распарсены заголовки, авторы, описания, теги, фандомы
+- ✅ Преобразование знаков в слова: 74 255 зн. → ~13 500 слов
+- ✅ Очистка HTML: удалены скрипты, стили, кнопки Author.Today
 
 ### Агент DevOps — Очереди и оркестрация (Этап 2/5)
 Контекст:
