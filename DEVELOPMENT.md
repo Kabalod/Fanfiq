@@ -71,8 +71,9 @@ alembic -c backend/api/alembic.ini upgrade head
   - `normalizer` (мэппинг полей, дедуп, upsert).
   - Первый парсер `ficbook`.
 - ✅ Этап 3 — Фронтенд MVP (с читалкой и расширенными фильтрами).
-- ⏳ Этап 4 — Новые парсеры (Author.Today, Litnet, Fanfics.me).
-- ⏳ Этап 5 — Наблюдаемость и CI.
+- ✅ Этап 4 — Парсер Author.Today (готов к тестированию).
+- ⏳ Этап 5 — Новые парсеры (Litnet, Fanfics.me).
+- ⏳ Этап 6 — Наблюдаемость и CI.
 
 ## Промпты для агентов
 
@@ -134,6 +135,25 @@ alembic upgrade head
 - `frontend/*` (структура, компоненты, stories, моки).
 Критерии приёмки:
 - Демо-страница результатов показывает загрузку, пустое состояние, списки, навигацию, и открытие `ReaderShell`.
+
+### Агент Парсер — Author.Today (Этап 4) ✅ ГОТОВО
+Контекст:
+- Author.Today — самая популярная русская платформа фанфиков
+- Схема парсера аналогична Ficbook (`backend/parsers/schemas.py`)
+- Архитектура: парсер + Celery воркер + CLI интеграция
+Задача:
+- Реализовать парсер HTML Author.Today (`backend/parsers/authortoday.py`)
+- Создать Celery воркер (`backend/workers/authortoday/worker.py`)
+- Обновить CLI для поддержки Author.Today (`backend/cli/crawl.py`)
+- Добавить селекторы для всех полей (заголовок, автор, описание, рейтинг, статус, слова, дата, фандомы, теги, предупреждения, главы)
+- Интегрировать с существующей архитектурой (Celery, нормализатор)
+Артефакты:
+- `backend/parsers/authortoday.py` — основной парсер
+- `backend/workers/authortoday/` — Celery воркер
+- Обновлённые CLI и конфигурация
+Критерии приёмки:
+- Локальный парсинг: `python backend/cli/crawl.py parse --site authortoday --url "https://author.today/work/..."` возвращает валидный JSON
+- Celery воркер: `python backend/cli/crawl.py enqueue --site authortoday --url "..." --wait 60` успешно парсит и сохраняет в БД
 
 ### Агент DevOps — Очереди и оркестрация (Этап 2/5)
 Контекст:
