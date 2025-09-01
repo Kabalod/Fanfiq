@@ -49,26 +49,84 @@ export const handlers = [
     const page = body.page || 1
     const pageSize = body.page_size || 20
     const query = body.query || ''
-    
+
+    // Фильтры
+    const ratingFilter = body.rating || []
+    const categoryFilter = body.category || []
+    const statusFilter = body.status || []
+    const warningsFilter = body.warnings || []
+    const tagsFilter = body.tags || []
+    const fandomsFilter = body.fandoms || []
+    const wordCountMin = body.word_count_min || 0
+    const wordCountMax = body.word_count_max || 1000000
+
     // Генерируем моковые данные
-    const totalWorks = query ? 42 : 100
+    let totalWorks = query ? 42 : 100
     const works: Work[] = []
-    
+
     const start = (page - 1) * pageSize
     const end = Math.min(start + pageSize, totalWorks)
-    
+
     for (let i = start; i < end; i++) {
       works.push(generateMockWork(i + 1))
     }
-    
-    // Фильтруем по запросу если есть
-    const filteredWorks = query 
-      ? works.filter(w => 
-          w.title.toLowerCase().includes(query.toLowerCase()) ||
-          w.summary?.toLowerCase().includes(query.toLowerCase())
-        )
-      : works
-    
+
+    // Применяем фильтры
+    let filteredWorks = works
+
+    // Фильтр по запросу
+    if (query) {
+      filteredWorks = filteredWorks.filter(w =>
+        w.title.toLowerCase().includes(query.toLowerCase()) ||
+        w.summary?.toLowerCase().includes(query.toLowerCase())
+      )
+    }
+
+    // Фильтр по рейтингу
+    if (ratingFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w => w.rating && ratingFilter.includes(w.rating))
+    }
+
+    // Фильтр по категории
+    if (categoryFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w => w.category && categoryFilter.includes(w.category))
+    }
+
+    // Фильтр по статусу
+    if (statusFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w => w.status && statusFilter.includes(w.status))
+    }
+
+    // Фильтр по предупреждениям
+    if (warningsFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w =>
+        w.warnings && warningsFilter.some(warning => w.warnings.includes(warning))
+      )
+    }
+
+    // Фильтр по тегам
+    if (tagsFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w =>
+        w.tags && tagsFilter.some(tag => w.tags.includes(tag))
+      )
+    }
+
+    // Фильтр по фандомам
+    if (fandomsFilter.length > 0) {
+      filteredWorks = filteredWorks.filter(w =>
+        w.fandoms && fandomsFilter.some(fandom => w.fandoms.includes(fandom))
+      )
+    }
+
+    // Фильтр по количеству слов
+    filteredWorks = filteredWorks.filter(w =>
+      w.word_count && w.word_count >= wordCountMin && w.word_count <= wordCountMax
+    )
+
+    // Корректируем общее количество с учетом фильтров
+    const filteredRatio = filteredWorks.length / works.length
+    totalWorks = Math.round(totalWorks * filteredRatio)
+
     const response: SearchResponse = {
       works: filteredWorks,
       total: totalWorks,
@@ -76,10 +134,10 @@ export const handlers = [
       page_size: pageSize,
       total_pages: Math.ceil(totalWorks / pageSize)
     }
-    
+
     // Имитируем задержку сети
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     return HttpResponse.json(response)
   }),
   

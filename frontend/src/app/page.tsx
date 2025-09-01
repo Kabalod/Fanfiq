@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { SearchBar } from '@/components/search-bar'
+import { FilterPanel } from '@/components/filter-panel'
 import { WorkCard } from '@/components/work-card'
 import { useSearchWorks } from '@/lib/api/client'
 import { SearchFilters } from '@/lib/api/schemas'
 import { Button } from '@/components/ui/button'
 import { DevTools } from '@/components/dev-tools'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Loader2, AlertCircle, Filter } from 'lucide-react'
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -15,6 +16,7 @@ export default function HomePage() {
     page: 1,
     page_size: 20,
   })
+  const [showFilters, setShowFilters] = useState(false)
 
   const { data, isLoading, error, refetch } = useSearchWorks(filters, {
     enabled: false, // Не делаем запрос автоматически
@@ -24,6 +26,18 @@ export default function HomePage() {
     setFilters(prev => ({
       ...prev,
       query: searchQuery,
+      page: 1,
+    }))
+    refetch()
+  }
+
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setFilters(newFilters)
+  }
+
+  const handleApplyFilters = () => {
+    setFilters(prev => ({
+      ...prev,
       page: 1,
     }))
     refetch()
@@ -43,11 +57,38 @@ export default function HomePage() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-3xl font-bold mb-6">Fanfiq - Поиск фанфиков</h1>
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            onSearch={handleSearch}
-          />
+
+          {/* Search and Filters Toggle */}
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  onSearch={handleSearch}
+                />
+              </div>
+              <Button
+                variant={showFilters ? "default" : "outline"}
+                onClick={() => setShowFilters(!showFilters)}
+                className="shrink-0"
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Фильтры
+              </Button>
+            </div>
+
+            {/* Filter Panel */}
+            {showFilters && (
+              <div className="max-w-4xl">
+                <FilterPanel
+                  filters={filters}
+                  onFiltersChange={handleFiltersChange}
+                  onApplyFilters={handleApplyFilters}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
