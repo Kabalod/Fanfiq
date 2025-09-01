@@ -11,6 +11,7 @@ app = Celery(
     include=[
         "workers.normalizer.worker",
         "workers.ficbook.worker",
+        "workers.authortoday.worker",
     ],
 )
 

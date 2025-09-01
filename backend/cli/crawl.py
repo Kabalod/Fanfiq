@@ -6,7 +6,9 @@ from typing import Optional
 from celery.result import AsyncResult
 from backend.workers.celery_app import app
 from backend.workers.ficbook.worker import crawl_ficbook
-from backend.parsers.ficbook import get_session, parse_ficbook_html
+from backend.workers.authortoday.worker import crawl_authortoday
+from backend.parsers.ficbook import get_session as get_ficbook_session, parse_ficbook_html
+from backend.parsers.authortoday import get_session as get_authortoday_session, parse_authortoday_html
 
 
 def write_out(data: dict, out: Optional[str], fmt: str) -> None:
@@ -30,10 +32,14 @@ def write_out(data: dict, out: Optional[str], fmt: str) -> None:
 
 def run_enqueue(site: str, url: str, wait: Optional[int]) -> int:
     site = site.lower()
-    if site != "ficbook":
-        print("Only 'ficbook' is supported in MVP", file=sys.stderr)
+    if site == "ficbook":
+        crawl_task = crawl_ficbook.delay(url)
+    elif site == "authortoday":
+        crawl_task = crawl_authortoday.delay(url)
+    else:
+        print(f"Site '{site}' is not supported. Available: ficbook, authortoday", file=sys.stderr)
         return 2
-    crawl_task = crawl_ficbook.delay(url)
+
     print(f"enqueued crawl task: {crawl_task.id}")
     if wait is None:
         return 0
@@ -50,13 +56,20 @@ def run_enqueue(site: str, url: str, wait: Optional[int]) -> int:
 
 def run_parse(site: str, url: str, out: Optional[str], fmt: str) -> int:
     site = site.lower()
-    if site != "ficbook":
-        print("Only 'ficbook' is supported in MVP", file=sys.stderr)
+    if site == "ficbook":
+        s = get_ficbook_session()
+        resp = s.get(url)
+        resp.raise_for_status()
+        payload = parse_ficbook_html(resp.text, url)
+    elif site == "authortoday":
+        s = get_authortoday_session()
+        resp = s.get(url)
+        resp.raise_for_status()
+        payload = parse_authortoday_html(resp.text, url)
+    else:
+        print(f"Site '{site}' is not supported. Available: ficbook, authortoday", file=sys.stderr)
         return 2
-    s = get_session()
-    resp = s.get(url)
-    resp.raise_for_status()
-    payload = parse_ficbook_html(resp.text, url)
+
     write_out(payload, out, fmt)
     return 0
 

@@ -4,8 +4,8 @@ import { SearchResponse, Work, Chapter } from '@/lib/api/schemas'
 // Генератор тестовых данных
 const generateMockWork = (id: number): Work => ({
   id: `work-${id}`,
-  site_id: 'ficbook',
-  site_work_id: `fb-${id}`,
+  site_id: id % 2 === 0 ? 'ficbook' : 'authortoday',
+  site_work_id: id % 2 === 0 ? `fb-${id}` : `at-${id}`,
   title: `Тестовый фанфик №${id}`,
   authors: [
     {
@@ -215,10 +215,17 @@ export const handlers = [
   // Запуск парсинга
   http.post('/api/v1/crawl', async ({ request }) => {
     const body = await request.json() as any
-    
+
     return HttpResponse.json({
       task_id: `task-${Date.now()}`,
       message: `Парсинг ${body.url} запущен`
+    })
+  }),
+
+  // Получение поддерживаемых сайтов
+  http.get('/api/v1/sites', () => {
+    return HttpResponse.json({
+      sites: ['ficbook', 'authortoday']
     })
   })
 ]

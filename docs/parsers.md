@@ -19,6 +19,22 @@
 Код парсера: `backend/parsers/ficbook.py` (функция `parse_ficbook_html`).
 Воркер: `backend/workers/ficbook/worker.py` (задача `crawl.ficbook`).
 
+## Author.Today
+- Заголовок: `h1.book-title`, `.book-title`, `.title`
+- Автор: `a[href*='/author/']`, `.author-name`, `.book-author`
+- Описание: `.annotation`, `.description`, `.summary`, `.book-description`
+- Рейтинг: `.rating`, `.age-rating`, `[data-rating]` (18+, 16+, 12+, 0+ → NC-21, NC-17, R, G)
+- Статус: `.status`, `.book-status` (завершён → Completed, в процессе → In Progress, заморожен → Frozen)
+- Количество слов: `.words-count`, `.word-count`, `[data-words]`
+- Дата обновления: `.updated-date`, `.last-update`, `.date`
+- Фандомы: `.fandoms a`, `.genres a`, `.categories a`, `a[href*='/fandom/']`, `a[href*='/genre/']`
+- Теги: `.tags a`, `.book-tags a`, `.labels a`, `a[href*='/tag/']`
+- Предупреждения: `.warnings`, `.caution`, `.alert`
+- Главы: `.chapter`, `.part`, `.book-chapter`, `.chapter-content`, `.text-chapter`, `.book-content`, `.text-content`
+
+Код парсера: `backend/parsers/authortoday.py` (функция `parse_authortoday_html`).
+Воркер: `backend/workers/authortoday/worker.py` (задача `crawl.authortoday`).
+
 ## AO3 (предложение)
 - Заголовок: `h2.title`
 - Автор: `a[rel="author"]`
@@ -56,10 +72,24 @@ celery -A backend.workers.celery_app:app worker -Q crawl,normalize -l info
 python backend/cli/crawl.py enqueue --site ficbook --url "https://ficbook.net/readfic/..." --wait 60
 ```
 
+## Запуск парсера Author.Today
+- Вариант 1: локальный парсинг
+```bash
+python backend/cli/crawl.py parse --site authortoday --url "https://author.today/work/..."
+```
+- Вариант 2: постановка задачи в Celery
+```bash
+python backend/cli/crawl.py enqueue --site authortoday --url "https://author.today/work/..." --wait 60
+```
+
 ### Авторизация
-- Для страниц, требующих логин, укажите `FICBOOK_COOKIE` в окружении:
+- **Ficbook**: Для страниц, требующих логин, укажите `FICBOOK_COOKIE` в окружении:
 ```bash
 set FICBOOK_COOKIE=PHPSESSID=...; other=...;
+```
+- **Author.Today**: Для доступа к платному контенту укажите `AUTHOR_TODAY_COOKIE`:
+```bash
+set AUTHOR_TODAY_COOKIE=session=...; auth=...;
 ```
 - Дополнительно: `SCRAPER_UA` (User-Agent), `SCRAPER_TIMEOUT` (секунды).
 
@@ -77,10 +107,15 @@ set FICBOOK_COOKIE=PHPSESSID=...; other=...;
 ## CLI
 - Локально:
 ```bash
-python backend/cli/crawl.py parse --site ficbook --url "…" --out out.json --format json
-python backend/cli/crawl.py parse --site ficbook --url "…" --format ndjson > out.ndjson
+# Ficbook
+python backend/cli/crawl.py parse --site ficbook --url "https://ficbook.net/readfic/..." --out out.json --format json
+# Author.Today
+python backend/cli/crawl.py parse --site authortoday --url "https://author.today/work/..." --format ndjson > out.ndjson
 ```
 - Очередь Celery:
 ```bash
-python backend/cli/crawl.py enqueue --site ficbook --url "…" --wait 60
+# Ficbook
+python backend/cli/crawl.py enqueue --site ficbook --url "https://ficbook.net/readfic/..." --wait 60
+# Author.Today
+python backend/cli/crawl.py enqueue --site authortoday --url "https://author.today/work/..." --wait 60
 ```

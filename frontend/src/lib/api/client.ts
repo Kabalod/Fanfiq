@@ -68,6 +68,12 @@ class APIClient {
     const response = await this.client.post('/api/v1/crawl', { site, url })
     return response.data
   }
+
+  // Получить поддерживаемые сайты
+  async getSupportedSites(): Promise<{ sites: string[] }> {
+    const response = await this.client.get('/api/v1/sites')
+    return response.data
+  }
 }
 
 // Экспортируем singleton
@@ -121,6 +127,17 @@ export function useCrawlWork(
 ) {
   return useMutation({
     mutationFn: ({ site, url }) => apiClient.crawlWork(site, url),
+    ...options,
+  })
+}
+
+// Хук для получения поддерживаемых сайтов
+export function useSupportedSites(
+  options?: Omit<UseQueryOptions<{ sites: string[] }, Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: ['sites', 'supported'],
+    queryFn: () => apiClient.getSupportedSites(),
     ...options,
   })
 }
