@@ -12,7 +12,7 @@ import os
 import re
 import time
 import requests
-from backend.parsers.schemas import ParsedWork
+from parsers.schemas import ParsedWork
 
 
 def extract_text(el):
@@ -20,8 +20,18 @@ def extract_text(el):
 
 
 def clean_html(container) -> str:
-    for tag in container.find_all(["script", "style", "iframe", "noscript", "nav", "header", "footer"]):
+    # Удаляем все ненужные теги
+    for tag in container.find_all(["script", "style", "iframe", "noscript", "nav", "header", "footer",
+                                  "modal-dialog", "library-button", "hide-button", "buy-button", "mark-button",
+                                  "aside-widget", "feedback-form", "chatra-button", "link"]):
         tag.decompose()
+
+    # Удаляем элементы с определенными классами
+    for tag in container.find_all(class_=["book-action-panel", "book-stats", "mt-v-lg", "panel-actions",
+                                         "btn-group", "dropdown", "spinner", "widget-spinner"]):
+        tag.decompose()
+
+    # Очищаем оставшийся HTML
     return str(container)
 
 
@@ -68,7 +78,7 @@ def parse_authortoday_html(html: str, url: str) -> Dict[str, Any]:
     title = extract_text(soup.select_one("h1.book-title, .book-title, .title"))
 
     # Автор
-    author_elem = soup.select_one("a[href*='/author/'], .author-name, .book-author")
+    author_elem = soup.select_one("a[href*='/u/'], .author-name, .book-author, .book-authors a")
     author = extract_text(author_elem)
 
     # Описание
@@ -99,19 +109,33 @@ def parse_authortoday_html(html: str, url: str) -> Dict[str, Any]:
         elif "заморож" in status_text or "frozen" in status_text:
             status = "Frozen"
 
-    # Количество слов
+    # Количество слов (Author.Today показывает знаки, не слова)
     word_count = 0
-    word_elem = soup.select_one(".words-count, .word-count, [data-words]")
-    if word_elem:
-        word_text = extract_text(word_elem)
-        m = re.search(r"(\d[\d\s]*)\s*слов", word_text, re.I)
-        if m:
-            word_count = int(m.group(1).replace(" ", ""))
-        else:
-            # Попробуем найти просто число
-            m = re.search(r"(\d+)", word_text.replace(" ", ""))
+    # Ищем текст с количеством знаков
+    text_content = soup.get_text()
+    m = re.search(r"(\d[\d\s\xa0]*)\s*зн", text_content, re.I)
+    if m:
+        char_count_str = m.group(1).replace(" ", "").replace("\xa0", "")
+        try:
+            char_count = int(char_count_str)
+            # Примерное преобразование знаков в слова (1 слово ≈ 5-6 знаков)
+            word_count = int(char_count / 5.5)
+        except ValueError:
+            word_count = 0
+
+    # Альтернативный поиск в HTML элементах
+    if word_count == 0:
+        word_elem = soup.select_one(".words-count, .word-count, [data-words]")
+        if word_elem:
+            word_text = extract_text(word_elem)
+            m = re.search(r"(\d[\d\s]*)\s*слов", word_text, re.I)
             if m:
-                word_count = int(m.group(1))
+                word_count = int(m.group(1).replace(" ", ""))
+            else:
+                # Попробуем найти просто число
+                m = re.search(r"(\d+)", word_text.replace(" ", ""))
+                if m:
+                    word_count = int(m.group(1))
 
     # Дата обновления
     updated_at = ""
