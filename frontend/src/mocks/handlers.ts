@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import { SearchResponse, Work } from '@/lib/api/schemas'
+import { SearchResponse, Work, Chapter } from '@/lib/api/schemas'
 
 // Генератор тестовых данных
 const generateMockWork = (id: number): Work => ({
@@ -100,21 +100,58 @@ export const handlers = [
     const { id } = params
     const chapters = []
     const chapterCount = Math.floor(Math.random() * 20) + 1
-    
+
     for (let i = 0; i < chapterCount; i++) {
       chapters.push({
         id: `chapter-${id}-${i + 1}`,
         work_id: id as string,
         number: i + 1,
-        title: `Глава ${i + 1}`,
-        content: `<p>Содержимое главы ${i + 1}...</p>`,
+        title: `Глава ${i + 1}: ${['Начало', 'Развитие', 'Кульминация', 'Развязка', 'Эпилог'][i % 5]}`,
+        content: `<h2>Глава ${i + 1}</h2>
+<p>Это начало ${i + 1}-й главы нашего замечательного фанфика. Здесь происходит много интересных событий и развивается сюжет.</p>
+
+<p>Главный герой стоял у окна, задумчиво глядя на городские огни. В его голове крутились мысли о прошлом, настоящем и будущем. Что ждет его дальше?</p>
+
+<p>Вдруг раздался стук в дверь. "Кто там?" - спросил он, подходя ближе. За дверью стоял старый друг, которого он не видел уже много лет.</p>
+
+<p>Они сели за стол и начали разговор. Воспоминания нахлынули волной, и время пролетело незаметно. Когда друг ушел, герой понял, что некоторые вещи никогда не меняются.</p>
+
+<p>На следующий день он проснулся с новой решимостью. Нужно было действовать, пока не поздно. Он взял сумку и вышел из дома, не оглядываясь назад.</p>`,
         word_count: Math.floor(Math.random() * 5000) + 500,
         created_at: new Date(2024, 0, i + 1).toISOString(),
         updated_at: new Date(2024, 0, i + 1).toISOString(),
       })
     }
-    
+
     return HttpResponse.json(chapters)
+  }),
+
+  // Получение конкретной главы
+  http.get('/api/v1/works/:workId/chapters/:chapterNumber', ({ params }) => {
+    const { workId, chapterNumber } = params
+    const chapterNum = parseInt(chapterNumber as string)
+
+    const chapter: Chapter = {
+      id: `chapter-${workId}-${chapterNum}`,
+      work_id: workId as string,
+      number: chapterNum,
+      title: `Глава ${chapterNum}: ${['Начало', 'Развитие', 'Кульминация', 'Развязка', 'Эпилог'][chapterNum % 5]}`,
+      content: `<h2>Глава ${chapterNum}</h2>
+<p>Это ${chapterNum}-я глава нашего замечательного фанфика. Здесь происходит много интересных событий и развивается сюжет.</p>
+
+<p>Главный герой стоял у окна, задумчиво глядя на городские огни. В его голове крутились мысли о прошлом, настоящем и будущем. Что ждет его дальше?</p>
+
+<p>Вдруг раздался стук в дверь. "Кто там?" - спросил он, подходя ближе. За дверью стоял старый друг, которого он не видел уже много лет.</p>
+
+<p>Они сели за стол и начали разговор. Воспоминания нахлынули волной, и время пролетело незаметно. Когда друг ушел, герой понял, что некоторые вещи никогда не меняются.</p>
+
+<p>На следующий день он проснулся с новой решимостью. Нужно было действовать, пока не поздно. Он взял сумку и вышел из дома, не оглядываясь назад.</p>`,
+      word_count: Math.floor(Math.random() * 5000) + 500,
+      created_at: new Date(2024, 0, chapterNum).toISOString(),
+      updated_at: new Date(2024, 0, chapterNum).toISOString(),
+    }
+
+    return HttpResponse.json(chapter)
   }),
   
   // Запуск парсинга

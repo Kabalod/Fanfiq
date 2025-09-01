@@ -143,8 +143,8 @@ export function WorkCard({ work }: WorkCardProps) {
       </CardContent>
       
       <CardFooter>
-        <div className="flex justify-between items-center w-full text-sm text-muted-foreground">
-          <div className="flex items-center gap-4">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             {work.category && (
               <span>{categoryLabels[work.category]}</span>
             )}
@@ -158,24 +158,31 @@ export function WorkCard({ work }: WorkCardProps) {
               <span>{formatWordCount(work.word_count)} слов</span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             {work.kudos_count !== undefined && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Heart className="h-3 w-3" />
                 <span>{work.kudos_count}</span>
               </div>
             )}
             {work.comments_count !== undefined && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <MessageCircle className="h-3 w-3" />
                 <span>{work.comments_count}</span>
               </div>
             )}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Calendar className="h-3 w-3" />
               <span>{formatDate(work.updated_at)}</span>
             </div>
+
+            <Button asChild size="sm">
+              <Link href={`/works/${work.id}`}>
+                <BookOpen className="h-4 w-4 mr-2" />
+                Читать
+              </Link>
+            </Button>
           </div>
         </div>
       </CardFooter>

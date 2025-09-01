@@ -54,7 +54,7 @@ class APIClient {
   // Получить главы работы
   async getWorkChapters(workId: string): Promise<Chapter[]> {
     const response = await this.client.get(`/api/v1/works/${workId}/chapters`)
-    return z.array(ChapterSchema).parse(response.data)
+    return ChapterSchema.array().parse(response.data)
   }
 
   // Получить конкретную главу
