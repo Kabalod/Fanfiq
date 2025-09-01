@@ -2,8 +2,8 @@ from typing import Dict, Any, List
 from sqlalchemy import insert, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from workers.celery_app import app
-from api.db.session import SessionLocal
-from api.db import models as dbm
+from backend.api.db.session import SessionLocal
+from backend.api.db import models as dbm
 
 
 @app.task(name="normalize.upsert_work")
