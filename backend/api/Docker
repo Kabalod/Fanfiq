@@ -12,7 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essen
 COPY . /app
 
 # 5. Install Python Dependencies
-RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt
+# Поддержка двух вариантов контекста: корень репо или backend/api
+RUN if [ -f /app/backend/api/requirements.txt ]; then \
+        pip install --no-cache-dir -r /app/backend/api/requirements.txt ; \
+    elif [ -f /app/requirements.txt ]; then \
+        pip install --no-cache-dir -r /app/requirements.txt ; \
+    else \
+        echo "requirements.txt not found" && exit 1 ; \
+    fi
 
 # 6. Expose API port
 EXPOSE 58090

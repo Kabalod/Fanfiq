@@ -12,7 +12,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essen
 COPY . /app
 
 # 5. Python deps
-RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt
+RUN if [ -f /app/backend/api/requirements.txt ]; then \
+        pip install --no-cache-dir -r /app/backend/api/requirements.txt ; \
+    elif [ -f /app/requirements.txt ]; then \
+        pip install --no-cache-dir -r /app/requirements.txt ; \
+    else \
+        echo "requirements.txt not found" && exit 1 ; \
+    fi
 
 # Railway задаёт Start Command. По умолчанию контейнер спит.
 CMD ["sh", "-lc", "sleep infinity"]
