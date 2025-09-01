@@ -1,0 +1,50 @@
+{
+  "source_site": "authortoday",
+  "original_url": "https://author.today/work/320794",
+  "title": "Путешествие незнаюзачем",
+  "author_name": "Подборки АТ",
+  "author_url": null,
+  "summary": "Игры юных богов. Куда заведут героя их интриги? Примечания автора: P. S. На критику не обижаюсь.",
+  "language": "ru",
+  "fandoms": [
+    "Триллер",
+    "Фанфик",
+    "Подростковая проза",
+    "Любовные романы",
+    "Историческая проза",
+    "Все аудиокниги",
+    "Боевик",
+    "Юмор",
+    "Поэзия",
+    "Попаданцы",
+    "ЛитРПГ",
+    "Фэнтези",
+    "Все книги",
+    "Приключения",
+    "Новинки",
+    "Фантастика",
+    "Разное",
+    "Современная проза",
+    "Альтернативная история",
+    "Ужасы",
+    "Рассказ",
+    "Детектив"
+  ],
+  "tags": [],
+  "rating": "",
+  "category": null,
+  "status": "In Progress",
+  "warnings": [],
+  "word_count": 1170,
+  "likes_count": null,
+  "comments_count": null,
+  "published_at": null,
+  "updated_at": null,
+  "chapters": [
+    {
+      "chapter_number": 1,
+      "title": "Глава 1",
+      "content_html": "<section class=\"content\">\n\n\n\n<div class=\"book-page inner-content\">\n<div class=\"row\">\n<div class=\"col-xs-9\">\n<div class=\"panel book-panel\" itemscope=\"\" itemtype=\"http://schema.org/Book\">\n<div class=\"panel-body\">\n\n<div class=\"clearfix\">\n\n<div class=\"book-meta-panel\">\n<h1 class=\"book-title\" itemprop=\"name\">\r\n            Путешествие незнаюзачем\r\n        </h1>\n<div class=\"book-authors\">\n<span itemprop=\"author\" itemscope=\"\" itemtype=\"http://schema.org/Person\">\n<meta content=\"Морфей\" itemprop=\"name\"/>\n<a href=\"/u/darknetdar/works\">Морфей</a> </span>\n</div>\n<div>\n<div class=\"book-genres\" data-pjax=\"\"><noindex><a href=\"/work/genre/all/any/story\">Рассказ</a> / <a href=\"/work/genre/other\">Разное</a></noindex></div>\n<div>\n<span class=\"label label-primary\">\n<i class=\"icon-pencil book-status-icon\"></i> в процессе\r\n                    </span>\n<span class=\"stats-sep\"></span><span class=\"hint-top\" data-format=\"calendar-short\" data-hint=\"Последнее обновление \" data-time=\"2024-01-04T22:36:21.0770000Z\"></span> <span class=\"stats-sep\"></span><span class=\"hint-top\" data-hint=\"Размер, кол-во знаков с пробелами\">6 440 <noindex>зн.</noindex></span>, 0,16 <abbr class=\"hint-top\" data-hint=\"Авторский лист - 40 000 печатных знаков\">а.л.</abbr>\n</div>\n<div style=\"margin-top: 3px\">\n</div>\n</div>\n\n\n</div>\n</div>\n</div>\n</div>\n<div class=\"panel\">\n<div class=\"panel-heading panel-nav\">\n<div class=\"nav-pills-v2\">\n<ul class=\"nav nav-pills pull-left ml-lg\">\n<li class=\"active\">\n<a class=\"nav-link\" href=\"/work/320794#comments\">\n<i class=\"icon-comments text-dark\"></i> <span>Комментарии</span> <span class=\"text-muted\">·</span> <span id=\"commentTotalCount\">0</span>\n</a>\n</li>\n</ul>\n</div>\n\n</div>\n<div class=\"panel-body\">\n<h2 class=\"header mt header-comments\">\n<span>Сортировать по     <div class=\"btn-group-dropdown\" data-pjax=\"\">\n<a class=\"btn-action-link text-lowercase\" data-toggle=\"dropdown\" href=\"javascript:;\">\r\n            времени, по убыванию\r\n        </a>\n<ul class=\"dropdown-menu\" role=\"menu\">\n<li>\n<a href=\"/work/320794?sorting=recent#comments\" rel=\"nofollow\">времени, по возрастанию</a>\n</li>\n<li>\n<a href=\"/work/320794?sorting=popular#comments\" rel=\"nofollow\">популярности</a>\n</li>\n</ul>\n</div>\n</span>\n</h2>\n<span class=\"anchor-long\" id=\"comments\"></span>\n\n<div id=\"comment-error\" style=\"display: none\">\r\n    Ошибка загрузки комментариев.\r\n    <button class=\"btn btn-primary btn-sm\" onclick=\"app.viewModel.loadComments(); return false;\" type=\"button\">Обновить</button>\n</div>\n<div id=\"commentsAsync\"></div>\n</div>\n</div>\n</div>\n<div class=\"col-xs-3\">\n<div class=\"aside-profile profile-card clearfix panel\">\n<div class=\"cover\" style=\"background-image: url(https://cm.author.today/content/2023/11/29/aa6658fe80414f6196a05795d6d3cace.jpg?width=371&amp;height=95&amp;rmode=max&amp;format=webp)\">\n</div>\n<a href=\"/u/darknetdar/works\">\n<div class=\"profile-avatar aside-profile-avatar\">\n<img class=\"\" src=\"https://cm.author.today/content/2023/11/29/fd288210d25340478f5bae4b06b48f8f.jpg?width=70&amp;height=70&amp;rmode=crop&amp;format=webp\"/>\n</div>\n</a>\n<div class=\"user-info\">\n<div class=\"profile-name\" title=\"Морфей\">Морфей</div>\n</div>\n<div class=\"aside-profile-stats\">\n<span class=\"hint-top\" data-hint=\"Динамический рейтинг автора: 0, абсолютный: 575\">\n<i class=\"icon-author-rating text-bold\"></i> 0\r\n</span>\n<span class=\"stats-sep\"></span>\n<span class=\"hint-top\" data-hint=\"Подписчиков: 1\">\n<i class=\"icon-favorite\"></i> 1\r\n        </span>\n<span class=\"stats-sep\"></span>\n<span class=\"hint-top\" data-hint=\"Друзей: 14\">\n<i class=\"icon-users\"></i> 14\r\n        </span>\n</div>\n</div>\n\n<!-- ko component: {name: 'disputed-items', params: {type: 'works'}} --><!--/ko -->\n<div class=\"aside-banner\" id=\"banner.at-col-24.08\" style=\"display: none\">\n<div class=\"aside-banner-buttons\">\n<a class=\"btn btn-default btn-sm btn-with-icon btn-hover ml\" href=\"/u/at_collections\">\n<i class=\"icon-info\"></i> Что это?\r\n            </a>\n<button class=\"btn btn-default btn-sm btn-with-icon btn-hover\"><i class=\"icon-cross\"></i> Скрыть </button>\n</div>\n<a href=\"/collection/6139?utm_source=AT&amp;utm_medium=banner&amp;utm_content=6139\" rel=\"noopener noreferrer nofollow\" target=\"_blank\">\n<img alt=\"Подборка АТ\" src=\"/dist/images/collections/witches_v.jpg\"/>\n</a>\n</div>\n\n\n</div>\n</div>\n</div>\n\n\n\n<button class=\"chatra-button\" id=\"chatra\">\n<svg class=\"chatra-button__icon\" viewbox=\"0 0 576 512\">\n<path d=\"M208 352c-41 0-79.1-9.3-111.3-25-21.8 12.7-52.1 25-88.7 25a7.83 7.83 0 0 1-7.3-4.8 8 8 0 0 1 1.5-8.7c.3-.3 22.4-24.3 35.8-54.5-23.9-26.1-38-57.7-38-92C0 103.6 93.1 32 208 32s208 71.6 208 160-93.1 160-208 160z\" opacity=\"0.9\"></path>\n<path d=\"M576 320c0 34.3-14.1 66-38 92 13.4 30.3 35.5 54.2 35.8 54.5a8 8 0 0 1 1.5 8.7 7.88 7.88 0 0 1-7.3 4.8c-36.6 0-66.9-12.3-88.7-25-32.2 15.8-70.3 25-111.3 25-86.2 0-160.2-40.4-191.7-97.9A299.82 299.82 0 0 0 208 384c132.3 0 240-86.1 240-192a148.61 148.61 0 0 0-1.3-20.1C522.5 195.8 576 253.1 576 320z\" opacity=\"0.4\"></path>\n</svg>\n</button>\n<!-- Chatra {literal} -->\n\n<!-- /Chatra {/literal} -->\n<input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"jER0Nh0qvZKHsAii9coUdeTtDpwVqmf70bIwgOiZ_KCdCj9xA-Ut5k0hEc9DjVzFivovIzzept_6sfIGbg8M-A2U3301\"/>\n</section>"
+    }
+  ]
+}

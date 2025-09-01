@@ -12,7 +12,7 @@ import os
 import re
 import time
 import requests
-from parsers.schemas import ParsedWork
+from .schemas import ParsedWork
 
 
 def extract_text(el):

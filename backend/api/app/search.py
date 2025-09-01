@@ -12,21 +12,21 @@ def build_search_query(filters: SearchFilters) -> Tuple[str, dict]:
         clauses.append("(public.f_unaccent(lower(title)) ILIKE public.f_unaccent(lower(:q)) OR public.f_unaccent(lower(summary)) ILIKE public.f_unaccent(lower(:q)))")
         params["q"] = f"%{filters.query}%"
 
-    if filters.language:
-        clauses.append("language = :lang")
-        params["lang"] = filters.language
+    if filters.sites:
+        clauses.append("EXISTS (SELECT 1 FROM sites s WHERE s.id = works.site_id AND s.code = ANY(:sites))")
+        params["sites"] = filters.sites
 
-    if filters.rating and filters.rating != 'all':
-        clauses.append("rating = :rating")
-        params["rating"] = filters.rating
+    if filters.rating:
+        clauses.append("rating = ANY(:ratings)")
+        params["ratings"] = filters.rating
 
-    if filters.status and filters.status != 'all':
-        clauses.append("status = :status")
-        params["status"] = filters.status
+    if filters.status:
+        clauses.append("status = ANY(:statuses)")
+        params["statuses"] = filters.status
 
-    if filters.category and filters.category != 'all':
-        clauses.append("category = :category")
-        params["category"] = filters.category
+    if filters.category:
+        clauses.append("category = ANY(:categories)")
+        params["categories"] = filters.category
 
     if filters.word_count_min is not None:
         clauses.append("word_count >= :wc_min")
@@ -35,37 +35,30 @@ def build_search_query(filters: SearchFilters) -> Tuple[str, dict]:
         clauses.append("word_count <= :wc_max")
         params["wc_max"] = filters.word_count_max
 
-    if filters.likes_min is not None:
-        clauses.append("COALESCE(likes_count, 0) >= :likes_min")
-        params["likes_min"] = filters.likes_min
-    if filters.comments_min is not None:
-        clauses.append("COALESCE(comments_count, 0) >= :comments_min")
-        params["comments_min"] = filters.comments_min
-
-    # Фильтры по тегам/фандомам/предупреждениям (exists подзапросы)
-    if filters.fandom:
+    if filters.tags:
+        clauses.append("EXISTS (SELECT 1 FROM work_tags wt WHERE wt.work_id = works.id AND wt.tag = ANY(:tags))")
+        params["tags"] = filters.tags
+    if filters.fandoms:
         clauses.append("EXISTS (SELECT 1 FROM work_fandoms wf WHERE wf.work_id = works.id AND wf.fandom = ANY(:fandoms))")
-        params["fandoms"] = filters.fandom
-    if filters.include_tags:
-        clauses.append("EXISTS (SELECT 1 FROM work_tags wt WHERE wt.work_id = works.id AND wt.tag = ANY(:inc_tags))")
-        params["inc_tags"] = filters.include_tags
-    if filters.exclude_tags:
-        clauses.append("NOT EXISTS (SELECT 1 FROM work_tags wt WHERE wt.work_id = works.id AND wt.tag = ANY(:exc_tags))")
-        params["exc_tags"] = filters.exclude_tags
+        params["fandoms"] = filters.fandoms
     if filters.warnings:
-        clauses.append("EXISTS (SELECT 1 FROM work_warnings ww WHERE ww.work_id = works.id AND ww.warning = ANY(:warns))")
-        params["warns"] = filters.warnings
+        clauses.append("EXISTS (SELECT 1 FROM work_warnings ww WHERE ww.work_id = works.id AND ww.warning = ANY(:warnings))")
+        params["warnings"] = filters.warnings
 
     where_sql = (" WHERE " + " AND ".join(clauses)) if clauses else ""
 
     sort_map = {
         "relevance": "updated_at DESC, likes_count DESC NULLS LAST",
-        "updated_desc": "updated_at DESC",
-        "popularity_desc": "likes_count DESC NULLS LAST",
-        "words_desc": "word_count DESC",
-        "words_asc": "word_count ASC",
+        "updated": "updated_at",
+        "created": "created_at",
+        "title": "title",
+        "kudos": "likes_count",
+        "comments": "comments_count",
+        "word_count": "word_count",
     }
-    order_sql = sort_map.get(filters.sort or "relevance", sort_map["relevance"])
+    sort_field = sort_map.get(filters.sort_by or "relevance", sort_map["relevance"])
+    sort_dir = "ASC" if (filters.sort_order or "desc") == "asc" else "DESC"
+    order_sql = f"{sort_field} {sort_dir}"
 
     page = filters.page or 1
     page_size = min(max(filters.page_size or 20, 1), 100)

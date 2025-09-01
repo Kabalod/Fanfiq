@@ -11,7 +11,7 @@ services:
       TZ: ${TZ}
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     ports:
       - "${POSTGRES_PORT_HOST:-54390}:5432"
     healthcheck:

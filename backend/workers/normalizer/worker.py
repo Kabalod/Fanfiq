@@ -1,14 +1,13 @@
 from typing import Dict, Any, List
-from sqlalchemy import insert, select
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
-from workers.celery_app import app
-from backend.api.db.session import SessionLocal
-from backend.api.db import models as dbm
+from ..celery_app import app
+from ...api.db.session import SessionLocal
+from ...api.db import models as dbm
 
 
-@app.task(name="normalize.upsert_work")
-def upsert_work(payload: Dict[str, Any]) -> str:
-    """Принимает объект из ТЗ 3.1 + поле source_site, выполняет upsert."""
+def perform_upsert(payload: Dict[str, Any]) -> str:
+    """Выполняет upsert в БД. Используется и Celery, и Prefect."""
     with SessionLocal() as db:
         # site
         site_code = payload.get("source_site") or "unknown"
@@ -89,3 +88,8 @@ def upsert_work(payload: Dict[str, Any]) -> str:
 
         db.commit()
         return str(work_id)
+
+
+@app.task(name="normalize.upsert_work")
+def upsert_work(payload: Dict[str, Any]) -> str:
+    return perform_upsert(payload)

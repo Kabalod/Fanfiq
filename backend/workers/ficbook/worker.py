@@ -1,8 +1,8 @@
 import os
 import time
-from backend.workers.celery_app import app
-from backend.workers.normalizer.worker import upsert_work
-from parsers.ficbook import parse_ficbook_html, get_session, fetch_html
+from ..celery_app import app
+from ..normalizer.worker import upsert_work
+from ...parsers.ficbook import parse_ficbook_html, get_session, fetch_html
 
 _last_run = 0.0
 

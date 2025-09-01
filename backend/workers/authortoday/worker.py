@@ -1,8 +1,8 @@
 import os
 import time
-from workers.celery_app import app
-from workers.normalizer.worker import upsert_work
-from parsers.authortoday import parse_authortoday_html, get_session, fetch_html
+from ..celery_app import app
+from ..normalizer.worker import upsert_work
+from ...parsers.authortoday import parse_authortoday_html, get_session, fetch_html
 
 _last_run = 0.0
 

@@ -4,11 +4,11 @@ import json
 from pathlib import Path
 from typing import Optional
 from celery.result import AsyncResult
-from workers.celery_app import app
-from workers.ficbook.worker import crawl_ficbook
-from workers.authortoday.worker import crawl_authortoday
-from parsers.ficbook import get_session as get_ficbook_session, parse_ficbook_html
-from parsers.authortoday import get_session as get_authortoday_session, parse_authortoday_html
+from ..workers.celery_app import app
+from ..workers.ficbook.worker import crawl_ficbook
+from ..workers.authortoday.worker import crawl_authortoday
+from ..parsers.ficbook import get_session as get_ficbook_session, parse_ficbook_html
+from ..parsers.authortoday import get_session as get_authortoday_session, parse_authortoday_html
 
 
 def write_out(data: dict, out: Optional[str], fmt: str) -> None:
