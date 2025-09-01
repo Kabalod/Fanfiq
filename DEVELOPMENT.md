@@ -45,8 +45,8 @@ alembic -c backend/api/alembic.ini upgrade head
 ## Фронтенд
 - Состав: Next.js + TS, Tailwind, shadcn/ui, Storybook, MSW.
 - Реализованные модули:
-  - ✅ `SearchBar` + `FilterPanel` (Accordion, TagMultiSelect, RangeSlider, сброс).
-  - ✅ `ResultsList` + `WorkCard` (loading/empty/error, badges, сортировки).
+  - ✅ `SearchBar` + `FilterPanel` (рейтинг, категория, статус, предупреждения, теги, фандомы, диапазон слов).
+- ✅ `ResultsList` + `WorkCard` (loading/empty/error, badges, сортировки).
   - ✅ `ReaderShell` + `ReaderSettings` (sanitizeHtml, темы light/dark/sepia, сохранение настроек).
   - ✅ API-клиент `searchWorks` (fetch + zod), моки через MSW.
   - ✅ Синхронизация фильтров с URL, пагинация, виртуализация списка.
@@ -70,8 +70,8 @@ alembic -c backend/api/alembic.ini upgrade head
   - Celery + RabbitMQ, маршрутизация задач `crawl.{site}` → `normalize.input`.
   - `normalizer` (мэппинг полей, дедуп, upsert).
   - Первый парсер `ficbook`.
-- ✅ Этап 3 — Фронтенд MVP (с читалкой).
-- ⏳ Этап 4 — Кэш и UX (расширенные фильтры).
+- ✅ Этап 3 — Фронтенд MVP (с читалкой и расширенными фильтрами).
+- ⏳ Этап 4 — Новые парсеры (Author.Today, Litnet, Fanfics.me).
 - ⏳ Этап 5 — Наблюдаемость и CI.
 
 ## Промпты для агентов
