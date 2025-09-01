@@ -44,12 +44,13 @@ alembic -c backend/api/alembic.ini upgrade head
 
 ## Фронтенд
 - Состав: Next.js + TS, Tailwind, shadcn/ui, Storybook, MSW.
-- Первые модули:
-  - `SearchBar` + `FilterPanel` (Accordion, TagMultiSelect, RangeSlider, сброс).
-  - `ResultsList` + `WorkCard` (loading/empty/error, badges, сортировки).
-  - `ReaderShell` + `ReaderSettings` (sanitizeHtml, темы light/dark/sepia, сохранение настроек).
-  - API-клиент `searchWorks` (fetch + zod), моки через MSW.
-  - Синхронизация фильтров с URL, пагинация, виртуализация списка.
+- Реализованные модули:
+  - ✅ `SearchBar` + `FilterPanel` (Accordion, TagMultiSelect, RangeSlider, сброс).
+  - ✅ `ResultsList` + `WorkCard` (loading/empty/error, badges, сортировки).
+  - ✅ `ReaderShell` + `ReaderSettings` (sanitizeHtml, темы light/dark/sepia, сохранение настроек).
+  - ✅ API-клиент `searchWorks` (fetch + zod), моки через MSW.
+  - ✅ Синхронизация фильтров с URL, пагинация, виртуализация списка.
+  - ✅ **Читалка с полной навигацией по главам** (`/works/[id]`).
 
 ## Договорённости
 - Порты сервисов по умолчанию на «…90».
@@ -61,17 +62,17 @@ alembic -c backend/api/alembic.ini upgrade head
 - Тесты: pytest для API/бизнес-логики; Storybook для UI.
 
 ## Этапы реализации (roadmap)
-- Этап 0 — Инфра и контракты (готово): compose, init.sql, env, OpenAPI, zod, mock API.
-- Этап 1 — БД и FTS:
+- ✅ Этап 0 — Инфра и контракты (готово): compose, init.sql, env, OpenAPI, zod, mock API.
+- ✅ Этап 1 — БД и FTS:
   - Alembic-миграции для схемы (таблицы, индексы по полям).
   - Реализация конструктора SQL-запросов с `unaccent(lower(...))` и триграммами для полнотекста и фильтрами/сортировками.
-- Этап 2 — Очереди и пайплайн:
+- ✅ Этап 2 — Очереди и пайплайн:
   - Celery + RabbitMQ, маршрутизация задач `crawl.{site}` → `normalize.input`.
   - `normalizer` (мэппинг полей, дедуп, upsert).
   - Первый парсер `ficbook`.
-- Этап 3 — Фронтенд MVP.
-- Этап 4 — Кэш и UX.
-- Этап 5 — Наблюдаемость и CI.
+- ✅ Этап 3 — Фронтенд MVP (с читалкой).
+- ⏳ Этап 4 — Кэш и UX (расширенные фильтры).
+- ⏳ Этап 5 — Наблюдаемость и CI.
 
 ## Промпты для агентов
 
@@ -121,7 +122,7 @@ alembic upgrade head
 Критерии приёмки:
 - Повторная обработка того же произведения не создаёт дубликаты, а обновляет записи и `updated_at`.
 
-### Агент Фронтенд — MVP (Этап 3)
+### Агент Фронтенд — MVP (Этап 3) ✅ ГОТОВО
 Контекст:
 - Контракт в `contracts/openapi.yaml`, zod — `frontend/src/lib/fse/apiSchema.ts`.
 Задача:
