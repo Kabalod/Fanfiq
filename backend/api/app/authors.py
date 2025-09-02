@@ -4,6 +4,7 @@ from typing import List
 
 from ..db import models
 from .. import schemas
+from ..db.session import get_db
 
 router = APIRouter()
 
