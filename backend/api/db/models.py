@@ -13,6 +13,12 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
 from sqlalchemy.sql import func
 import enum
+from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+from ..db.get_async_session import get_async_session
 
 Base = declarative_base()
 
@@ -105,22 +111,11 @@ class WorkWarning(Base):
     work: Mapped[Work] = relationship("Work", back_populates="warnings")
 
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    bookmarks = relationship("Bookmark", back_populates="user")
+class User(Base, SQLAlchemyBaseUserTable[int]):
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-class Bookmark(Base):
-    __tablename__ = "bookmarks"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-    user = relationship("User", back_populates="bookmarks")
-    work = relationship("Work")
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
 
 
 # Индексы для ускорения поиска/сортировок

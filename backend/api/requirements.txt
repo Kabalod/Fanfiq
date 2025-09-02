@@ -1,4 +1,4 @@
-fastapi==0.103.2
+fastapi==0.111.0
 starlette==0.27.0
 uvicorn[standard]==0.30.0
 pydantic==2.10.4
@@ -11,3 +11,6 @@ beautifulsoup4==4.12.3
 celery==5.4.0
 pytest==8.3.3
 prefect==2.14.10
+fastapi-users[sqlalchemy]==14.0.1
+passlib[bcrypt]==1.7.4
+python-jose==3.5.0

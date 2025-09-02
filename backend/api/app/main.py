@@ -9,8 +9,36 @@ from .cache import make_search_cache_key, cache_get, cache_set
 import os
 import json
 from typing import List
+from . import bookmarks
+from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
+
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
+)
+app.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_reset_password_router(),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_verify_router(UserRead),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+)
+
+app.include_router(bookmarks.router, prefix="/bookmarks", tags=["bookmarks"])
 
 # CORS (разрешаем фронтенд-домен)
 _origins_env = os.getenv("ALLOWED_ORIGINS", "*")
