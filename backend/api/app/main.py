@@ -6,7 +6,6 @@ from ..db.session import SessionLocal
 from .search import execute_search
 from .cache import make_search_cache_key, cache_get, cache_set
 import os
-from backend.flows.prefect_flows import crawl_ficbook_flow
 import json
 from typing import List
 
@@ -80,6 +79,10 @@ def crawl(payload: dict):
     if site != "ficbook":
         raise HTTPException(status_code=400, detail="only ficbook supported in MVP")
     # Если PREFECT_SUBMIT=1 — пробуем submit, иначе синхронный запуск
+    try:
+        from backend.flows.prefect_flows import crawl_ficbook_flow
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"prefect flow unavailable: {e}")
     if os.getenv("PREFECT_SUBMIT") == "1":
         future = crawl_ficbook_flow.submit(url)
         return {"state": str(future.state.type)}
