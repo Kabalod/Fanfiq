@@ -1,26 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { SearchBar } from '@/components/search-bar'
 import { FilterPanel } from '@/components/filter-panel'
-import { WorkCard } from '@/components/work-card'
+import { WorkCard } from '@/components/results/WorkCard'
 import { useSearchWorks } from '@/lib/api/client'
 import { SearchFilters } from '@/lib/api/schemas'
 import { Button } from '@/components/ui/button'
 import { DevTools } from '@/components/dev-tools'
 import { Loader2, AlertCircle, Filter } from 'lucide-react'
+import { filtersToQuery, queryToFilters } from '@/lib/url-state'
 
 export default function HomePage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filters, setFilters] = useState<SearchFilters>({
-    page: 1,
-    page_size: 20,
-  })
-  const [showFilters, setShowFilters] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
-  const { data, isLoading, error, refetch } = useSearchWorks(filters, {
-    enabled: false, // Не делаем запрос автоматически
+  const [filters, setFilters] = useState<SearchFilters>(() =>
+    queryToFilters(searchParams)
+  )
+  const [searchQuery, setSearchQuery] = useState(filters.query || '')
+  const [showFilters, setShowFilters] = useState(Object.keys(filters).length > 2) // show if more than page/page_size
+
+  const { data, isLoading, error, isFetching } = useSearchWorks(filters, {
+    keepPreviousData: true,
   })
+
+  useEffect(() => {
+    const newQueryString = filtersToQuery(filters).toString()
+    // We replace instead of push to avoid polluting history on every filter change
+    router.replace(`${pathname}?${newQueryString}`)
+  }, [filters, pathname, router])
 
   const handleSearch = () => {
     setFilters(prev => ({
@@ -28,19 +39,6 @@ export default function HomePage() {
       query: searchQuery,
       page: 1,
     }))
-    refetch()
-  }
-
-  const handleFiltersChange = (newFilters: SearchFilters) => {
-    setFilters(newFilters)
-  }
-
-  const handleApplyFilters = () => {
-    setFilters(prev => ({
-      ...prev,
-      page: 1,
-    }))
-    refetch()
   }
 
   const handlePageChange = (newPage: number) => {
@@ -48,7 +46,6 @@ export default function HomePage() {
       ...prev,
       page: newPage,
     }))
-    refetch()
   }
 
   return (
@@ -83,8 +80,8 @@ export default function HomePage() {
               <div className="max-w-4xl">
                 <FilterPanel
                   filters={filters}
-                  onFiltersChange={handleFiltersChange}
-                  onApplyFilters={handleApplyFilters}
+                  onFiltersChange={setFilters}
+                  onApplyFilters={handleSearch} // Re-using handleSearch as it resets page
                 />
               </div>
             )}
@@ -95,7 +92,7 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Loading State */}
-        {isLoading && (
+        {(isLoading || isFetching) && (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <span className="ml-3 text-muted-foreground">Поиск...</span>
@@ -103,19 +100,19 @@ export default function HomePage() {
         )}
 
         {/* Error State */}
-        {error && (
+        {error && !isFetching && (
           <div className="flex flex-col items-center py-20">
             <AlertCircle className="h-12 w-12 text-destructive mb-4" />
             <h2 className="text-xl font-semibold mb-2">Произошла ошибка</h2>
             <p className="text-muted-foreground mb-4">
               {error.message || 'Не удалось выполнить поиск'}
             </p>
-            <Button onClick={() => refetch()}>Попробовать снова</Button>
+            <Button onClick={handleSearch}>Попробовать снова</Button>
           </div>
         )}
 
         {/* Results */}
-        {data && !isLoading && (
+        {data && !isFetching && (
           <>
             {/* Results Header */}
             <div className="mb-6">
@@ -167,8 +164,8 @@ export default function HomePage() {
           </>
         )}
 
-        {/* Initial State */}
-        {!data && !isLoading && !error && (
+        {/* Initial State - hide when there are results or loading/error */}
+        {!data && !isLoading && !error && !isFetching && (
           <div className="text-center py-20">
             <h2 className="text-2xl font-semibold mb-4">
               Начните поиск
