@@ -16,3 +16,4 @@ passlib[bcrypt]==1.7.4
 python-jose==3.5.0
 sentry-sdk[fastapi]
 psycopg2-binary
+html2text
