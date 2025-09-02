@@ -68,6 +68,8 @@ class Work(Base):
     tags: Mapped[list["WorkTag"]] = relationship("WorkTag", back_populates="work", cascade="all, delete-orphan")
     warnings: Mapped[list["WorkWarning"]] = relationship("WorkWarning", back_populates="work", cascade="all, delete-orphan")
     reading_history: Mapped[list["ReadingHistory"]] = relationship("ReadingHistory", back_populates="work")
+    pairings: Mapped[list["Pairing"]] = relationship("Pairing", back_populates="work")
+    characters: Mapped[list["Character"]] = relationship("Character", back_populates="work")
 
 
 class Chapter(Base):
@@ -111,6 +113,19 @@ class WorkWarning(Base):
     warning: Mapped[str] = mapped_column(String(200), index=True)
 
     work: Mapped[Work] = relationship("Work", back_populates="warnings")
+
+
+class Pairing(Base):
+    __tablename__ = "pairings"
+    id = Column(Integer, primary_key=True)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
+    character_name = Column(String, nullable=False)
+
+class Character(Base):
+    __tablename__ = "characters"
+    id = Column(Integer, primary_key=True)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
+    name = Column(String, nullable=False)
 
 
 class ReadingHistory(Base):
