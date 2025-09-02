@@ -1,20 +1,10 @@
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    Float,
-    DateTime,
-    ForeignKey,
-    Enum,
-    Boolean,
-    UniqueConstraint,
-    Index,
+    Column, Integer, String, Text, Float, DateTime, ForeignKey, Enum, Boolean, UniqueConstraint, Index
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
 from sqlalchemy.sql import func
 import enum
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy.orm import Mapped, mapped_column
 from .base import Base
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -140,6 +130,7 @@ class ReadingHistory(Base):
 
 
 class User(Base, SQLAlchemyBaseUserTable[int]):
+    __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     reading_history: Mapped[list["ReadingHistory"]] = relationship("ReadingHistory", back_populates="user")
 
