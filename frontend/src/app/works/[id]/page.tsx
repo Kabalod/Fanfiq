@@ -42,7 +42,7 @@ export default function WorkPage() {
   const params = useParams()
   const workId = params.id as string
 
-  const { reader: readerSettings, setReaderTheme } = useSettingsStore()
+  const { reader: readerSettings, setReaderTheme, setFontSize } = useSettingsStore()
   const [currentChapter, setCurrentChapter] = useState(0)
 
   const { data: work, isLoading: workLoading, error: workError } = useWork(workId, {
@@ -115,7 +115,7 @@ export default function WorkPage() {
   }
 
   return (
-    <div className={`min-h-screen ${themeClasses[readerSettings.theme]}`}>
+    <div className={`min-h-screen ${themeClasses[readerSettings.theme]}`} style={{ fontSize: `${readerSettings.fontSize}px` }}>
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -124,7 +124,12 @@ export default function WorkPage() {
               Назад к поиску
             </Link>
           </Button>
-          <ReaderSettings theme={readerSettings.theme} onThemeChange={setReaderTheme} />
+          <ReaderSettings 
+            theme={readerSettings.theme} 
+            fontSize={readerSettings.fontSize}
+            onThemeChange={setReaderTheme} 
+            onFontSizeChange={setFontSize}
+          />
         </div>
       </header>
 
