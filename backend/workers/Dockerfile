@@ -2,8 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Копируем requirements.txt из корня проекта
-COPY ./backend/api/requirements.txt /app/requirements.txt
+# Копируем requirements.txt
+COPY ../api/requirements.txt /app/requirements.txt
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r /app/requirements.txt
