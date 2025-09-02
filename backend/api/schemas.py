@@ -19,7 +19,7 @@ class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BookmarkBase(BaseModel):
     work_id: int
@@ -32,7 +32,7 @@ class Bookmark(BookmarkBase):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserRead(schemas.BaseUser[int]):
     pass
@@ -53,7 +53,7 @@ class Work(BaseModel):
     updated_at: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Author(BaseModel):
     id: int
@@ -61,7 +61,7 @@ class Author(BaseModel):
     url: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AuthorDetail(Author):
     works: List[Work] = []
@@ -83,4 +83,4 @@ class ReadingHistory(ReadingHistoryBase):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
