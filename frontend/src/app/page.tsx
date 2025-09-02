@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useInView } from 'react-intersection-observer'
 import { SearchBar } from '@/components/search-bar'
-import { FilterPanel } from '@/components/filter-panel'
+import dynamic from 'next/dynamic'
 import { ResultsList } from '@/components/results/ResultsList'
 import { useSearchWorksInfinite } from '@/lib/api/client'
 import { SearchFilters } from '@/lib/api/schemas'
@@ -14,6 +14,11 @@ import { AlertCircle, Filter } from 'lucide-react'
 import { filtersToQuery, queryToFilters } from '@/lib/url-state'
 import { track } from '@/lib/analytics'
 import { useHotkeys } from '@/hooks/use-hotkeys'
+
+const FilterPanel = dynamic(() => import('@/components/filter-panel').then(mod => mod.FilterPanel), {
+  ssr: false,
+  loading: () => <p>Загрузка фильтров...</p>
+})
 
 export default function HomePage() {
   const router = useRouter()

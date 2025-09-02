@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 
@@ -14,7 +15,7 @@ export type Work = {
   updated_at?: string | null
 }
 
-export function WorkCard({ work }: { work: Work }) {
+export const WorkCard = memo(function WorkCard({ work }: { work: Work }) {
   const authors = work.authors?.map(a => a.name).filter(Boolean).join(', ') || '—'
   return (
     <article className="rounded-lg border bg-card text-card-foreground p-4 hover:shadow-sm transition">
@@ -40,4 +41,4 @@ export function WorkCard({ work }: { work: Work }) {
       </footer>
     </article>
   )
-}
+})
