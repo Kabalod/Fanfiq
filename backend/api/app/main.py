@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from .models import SearchFilters, SearchResponse, Work, Chapter, SupportedSites, Author
@@ -10,6 +11,26 @@ import json
 from typing import List
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
+
+# CORS (разрешаем фронтенд-домен)
+_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
+if _origins_env.strip() == "*":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    allowed_origins = [o.strip() for o in _origins_env.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def get_db():
