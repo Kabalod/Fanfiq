@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from fastapi_users import schemas
 
 class Token(BaseModel):
@@ -42,3 +42,14 @@ class UserCreate(schemas.BaseUserCreate):
 
 class UserUpdate(schemas.BaseUserUpdate):
     pass
+
+class AuthorDetail(Author):
+    works: List[Work] = []
+
+class Author(BaseModel):
+    id: int
+    name: str
+    url: Optional[str] = None
+
+    class Config:
+        orm_mode = True
