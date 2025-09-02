@@ -12,6 +12,7 @@ import { DevTools } from '@/components/dev-tools'
 import { AlertCircle, Filter } from 'lucide-react'
 import { filtersToQuery, queryToFilters } from '@/lib/url-state'
 import { track } from '@/lib/analytics'
+import { useHotkeys } from '@/hooks/use-hotkeys'
 
 export default function HomePage() {
   const router = useRouter()
@@ -28,6 +29,17 @@ export default function HomePage() {
     keepPreviousData: true,
     onSuccess: () => {
       track({ type: 'search_submitted', query: filters.query, filters })
+    }
+  })
+
+  useHotkeys({
+    '/': (e) => {
+      e.preventDefault()
+      document.querySelector<HTMLInputElement>('input[type="search"]')?.focus()
+    },
+    'f': (e) => {
+      e.preventDefault()
+      setShowFilters(prev => !prev)
     }
   })
 
