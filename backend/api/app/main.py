@@ -94,20 +94,28 @@ def search_works(payload: SearchFilters | None = None, db: Session = Depends(get
 @app.post("/api/v1/crawl")
 def crawl(payload: dict):
     url = payload.get("url")
-    site = (payload.get("site") or "ficbook").lower()
+    site = (payload.get("site") or "").lower()
+    
     if not url:
         raise HTTPException(status_code=400, detail="url is required")
-    if site != "ficbook":
-        raise HTTPException(status_code=400, detail="only ficbook supported in MVP")
-    # Если PREFECT_SUBMIT=1 — пробуем submit, иначе синхронный запуск
+
     try:
-        from backend.flows.prefect_flows import crawl_ficbook_flow
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"prefect flow unavailable: {e}")
+        if site == 'ficbook':
+            from parsers.ficbook.worker import ficbook_flow
+            flow = ficbook_flow
+        elif site == 'authortoday':
+            from parsers.authortoday.worker import authortoday_flow
+            flow = authortoday_flow
+        else:
+            raise HTTPException(status_code=400, detail=f"Unsupported site: {site}")
+    except ImportError:
+        raise HTTPException(status_code=500, detail="Could not import parser flow.")
+
     if os.getenv("PREFECT_SUBMIT") == "1":
-        future = crawl_ficbook_flow.submit(url)
+        future = flow.submit(url)
         return {"state": str(future.state.type)}
-    work_id = crawl_ficbook_flow(url)
+    
+    work_id = flow(url)
     return {"work_id": work_id}
 
 
