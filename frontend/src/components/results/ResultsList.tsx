@@ -3,6 +3,8 @@
 import { Work } from '@/lib/api/schemas'
 import { WorkCard } from './WorkCard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useRef } from 'react'
 
 export function WorkCardSkeleton() {
   return (
@@ -26,21 +28,41 @@ export function WorkCardSkeleton() {
 }
 
 export function ResultsList({ works, isLoading }: { works: Work[], isLoading?: boolean }) {
-  if (isLoading) {
-    return (
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <WorkCardSkeleton key={i} />
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: isLoading ? 6 : works.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 160, // Estimate height of a card + gap
+    overscan: 5,
+  })
+
+  return (
+    <div ref={parentRef} className="h-[calc(100vh-200px)] overflow-y-auto">
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+        className="grid md:grid-cols-1 lg:grid-cols-2"
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '50%',
+              transform: `translateY(${virtualItem.start}px)`,
+              padding: '0.75rem',
+            }}
+          >
+            {isLoading ? <WorkCardSkeleton /> : <WorkCard work={works[virtualItem.index]} />}
+          </div>
         ))}
       </div>
-    )
-  }
-  
-  return (
-    <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-      {works.map((work) => (
-        <WorkCard key={work.id} work={work} />
-      ))}
     </div>
   )
 }
