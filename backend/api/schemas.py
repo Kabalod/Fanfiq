@@ -43,6 +43,18 @@ class UserCreate(schemas.BaseUserCreate):
 class UserUpdate(schemas.BaseUserUpdate):
     pass
 
+class Work(BaseModel):
+    id: int
+    title: str
+    author_id: int
+    description: Optional[str] = None
+    cover_image: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+    class Config:
+        orm_mode = True
+
 class Author(BaseModel):
     id: int
     name: str
