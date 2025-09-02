@@ -43,9 +43,6 @@ class UserCreate(schemas.BaseUserCreate):
 class UserUpdate(schemas.BaseUserUpdate):
     pass
 
-class AuthorDetail(Author):
-    works: List[Work] = []
-
 class Author(BaseModel):
     id: int
     name: str
@@ -53,6 +50,9 @@ class Author(BaseModel):
 
     class Config:
         orm_mode = True
+
+class AuthorDetail(Author):
+    works: List[Work] = []
 
 class SearchFilters(BaseModel):
     include_tags: Optional[List[str]] = None
