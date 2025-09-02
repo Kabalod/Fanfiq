@@ -171,6 +171,11 @@ def crawl(payload: dict):
     return {"work_id": work_id}
 
 
+@app.get("/sentry-debug")
+async def sentry_debug():
+    division_by_zero = 1 / 0
+
+
 @app.get("/api/v1/works/{work_id}", response_model=Work)
 def get_work(work_id: int, db: Session = Depends(get_db)):
     conn = db.connection()
