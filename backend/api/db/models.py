@@ -9,6 +9,7 @@ from sqlalchemy import (
     Enum,
     Boolean,
     UniqueConstraint,
+    Index,
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
 from sqlalchemy.sql import func
