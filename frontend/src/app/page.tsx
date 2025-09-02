@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useInView } from 'react-intersection-observer'
 import { SearchBar } from '@/components/search-bar'
 import { FilterPanel } from '@/components/filter-panel'
 import { ResultsList } from '@/components/results/ResultsList'
-import { useSearchWorks } from '@/lib/api/client'
+import { useSearchWorksInfinite } from '@/lib/api/client'
 import { SearchFilters } from '@/lib/api/schemas'
 import { Button } from '@/components/ui/button'
 import { DevTools } from '@/components/dev-tools'
@@ -25,11 +26,17 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState(filters.query || '')
   const [showFilters, setShowFilters] = useState(Object.keys(filters).length > 2) // show if more than page/page_size
 
-  const { data, isLoading, error, isFetching } = useSearchWorks(filters, {
+  const { ref, inView } = useInView()
+
+  const {
+    data,
+    error,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useSearchWorksInfinite(filters, {
     keepPreviousData: true,
-    onSuccess: () => {
-      track({ type: 'search_submitted', query: filters.query, filters })
-    }
   })
 
   useHotkeys({
@@ -49,6 +56,12 @@ export default function HomePage() {
     router.replace(`${pathname}?${newQueryString}`)
   }, [filters, pathname, router])
 
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, hasNextPage, fetchNextPage])
+
   const handleSearch = () => {
     const newFilters = {
       ...filters,
@@ -58,15 +71,8 @@ export default function HomePage() {
     setFilters(newFilters)
   }
 
-  const handlePageChange = (newPage: number) => {
-    setFilters(prev => ({
-      ...prev,
-      page: newPage,
-    }))
-  }
-
   const renderContent = () => {
-    if (isLoading) {
+    if (isFetching && !data) {
       return <ResultsList works={[]} isLoading />
     }
 
@@ -84,50 +90,20 @@ export default function HomePage() {
     }
 
     if (data) {
-      if (data.works.length > 0) {
+        const allWorks = data.pages.flatMap(page => page.works)
         return (
-          <>
-            <div className="mb-6">
-              <p className="text-muted-foreground">
-                Найдено {data.total} результатов
-              </p>
-            </div>
-            <ResultsList works={data.works} />
-            {data.total_pages > 1 && (
-              <div className="flex justify-center gap-2 mt-8">
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(data.page - 1)}
-                  disabled={data.page === 1}
-                >
-                  Предыдущая
-                </Button>
-                <div className="flex items-center px-4">
-                  Страница {data.page} из {data.total_pages}
+            <>
+                <div className="mb-6">
+                    <p className="text-muted-foreground">
+                        Показано {allWorks.length} из {data.pages[0].total} результатов
+                    </p>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(data.page + 1)}
-                  disabled={data.page === data.total_pages}
-                >
-                  Следующая
-                </Button>
-              </div>
-            )}
-          </>
+                <ResultsList works={allWorks} />
+                <div ref={ref} className="h-10" />
+                {isFetchingNextPage && <div className="text-center">Загрузка...</div>}
+                {!hasNextPage && allWorks.length > 0 && <div className="text-center">Конец списка</div>}
+            </>
         )
-      } else {
-        return (
-          <div className="text-center py-20">
-            <p className="text-xl text-muted-foreground mb-2">
-              Ничего не найдено
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Попробуйте изменить параметры поиска
-            </p>
-          </div>
-        )
-      }
     }
 
     return (

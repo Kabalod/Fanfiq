@@ -80,7 +80,7 @@ class APIClient {
 export const apiClient = new APIClient()
 
 // Хук для React Query
-import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query'
+import { useQuery, useMutation, useInfiniteQuery, UseQueryOptions, UseMutationOptions, UseInfiniteQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 // Хук для поиска
@@ -138,6 +138,24 @@ export function useSupportedSites(
   return useQuery({
     queryKey: ['sites', 'supported'],
     queryFn: () => apiClient.getSupportedSites(),
+    ...options,
+  })
+}
+
+// Infinite query hook for search
+export function useSearchWorksInfinite(
+  filters: Omit<SearchFilters, 'page'>,
+  options?: Omit<UseInfiniteQueryOptions<SearchResponse, Error>, 'queryKey' | 'queryFn'>
+) {
+  return useInfiniteQuery({
+    queryKey: ['works', 'search', 'infinite', filters],
+    queryFn: ({ pageParam = 1 }) => apiClient.searchWorks({ ...filters, page: pageParam }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.total_pages) {
+        return lastPage.page + 1
+      }
+      return undefined
+    },
     ...options,
   })
 }
