@@ -152,6 +152,9 @@ def crawl(payload: dict):
         elif site == 'litnet':
             from parsers.litnet.worker import litnet_flow
             flow = litnet_flow
+        elif site == 'fanficsme':
+            from parsers.fanficsme.worker import fanficsme_flow
+            flow = fanficsme_flow
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported site: {site}")
     except ImportError:
