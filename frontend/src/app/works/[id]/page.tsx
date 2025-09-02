@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, AlertCircle, ChevronLeft, ChevronRight, BookOpen, User, Calendar, Heart, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import DOMPurify from 'dompurify'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 const ratingColors: Record<string, string> = {
   'G': 'bg-green-100 text-green-800',
@@ -312,7 +312,7 @@ export default function WorkPage() {
                             ? 'prose-p:text-amber-900 prose-headings:text-amber-800'
                             : 'prose-p:text-gray-700 prose-headings:text-gray-900'
                         }`}
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(currentChapterData.content) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentChapterData.content) }}
                       />
                     </div>
                   </Card>
