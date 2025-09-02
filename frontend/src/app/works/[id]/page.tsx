@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { useWork, useWorkChapters } from '@/lib/api/client'
+import { useSettingsStore } from '@/store/settings'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, AlertCircle, User, Calendar, Heart, MessageCircle } from 'lucide-react'
@@ -41,8 +42,8 @@ export default function WorkPage() {
   const params = useParams()
   const workId = params.id as string
 
+  const { reader: readerSettings, setReaderTheme } = useSettingsStore()
   const [currentChapter, setCurrentChapter] = useState(0)
-  const [theme, setTheme] = useState<ReaderTheme>('light')
 
   const { data: work, isLoading: workLoading, error: workError } = useWork(workId, {
     onSuccess: (data) => {
@@ -114,7 +115,7 @@ export default function WorkPage() {
   }
 
   return (
-    <div className={`min-h-screen ${themeClasses[theme]}`}>
+    <div className={`min-h-screen ${themeClasses[readerSettings.theme]}`}>
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -123,7 +124,7 @@ export default function WorkPage() {
               Назад к поиску
             </Link>
           </Button>
-          <ReaderSettings theme={theme} onThemeChange={handleThemeChange} />
+          <ReaderSettings theme={readerSettings.theme} onThemeChange={setReaderTheme} />
         </div>
       </header>
 
@@ -146,7 +147,7 @@ export default function WorkPage() {
               </div>
 
               {currentChapterData && (
-                <article className={`prose prose-lg max-w-none leading-relaxed ${proseThemeClasses[theme]}`}
+                <article className={`prose prose-lg max-w-none leading-relaxed ${proseThemeClasses[readerSettings.theme]}`}
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentChapterData.content) }}
                 />
               )}
