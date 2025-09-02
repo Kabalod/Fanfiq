@@ -13,8 +13,11 @@ from . import bookmarks
 from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
 from sqlalchemy import select
 from . import models
+from .logging import log_requests
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
+
+app.middleware("http")(log_requests)
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
