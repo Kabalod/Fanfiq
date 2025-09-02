@@ -7,7 +7,7 @@ COPY backend/parsers/schemas.py /app/backend/parsers/schemas.py
 COPY backend/api/db /app/backend/api/db
 
 # Копируем сам парсер
-COPY parsers/fanficsme /app/parsers/fanficsme
+COPY ./parsers/fanficsme /app/parsers/fanficsme
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt

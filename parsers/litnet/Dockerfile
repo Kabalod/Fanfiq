@@ -7,7 +7,7 @@ COPY backend/parsers/schemas.py /app/backend/parsers/schemas.py
 COPY backend/api/db /app/backend/api/db
 
 # Копируем сам парсер
-COPY parsers/litnet /app/parsers/litnet
+COPY ./parsers/litnet /app/parsers/litnet
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r /app/backend/api/requirements.txt
