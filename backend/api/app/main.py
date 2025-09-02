@@ -106,6 +106,9 @@ def crawl(payload: dict):
         elif site == 'authortoday':
             from parsers.authortoday.worker import authortoday_flow
             flow = authortoday_flow
+        elif site == 'litnet':
+            from parsers.litnet.worker import litnet_flow
+            flow = litnet_flow
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported site: {site}")
     except ImportError:
