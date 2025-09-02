@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, AlertCircle, User, Calendar, Heart, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { sanitizeHtml } from '@/lib/sanitize'
 import { ReaderHeader } from '@/components/reader/ReaderHeader'
 import { ChapterNav } from '@/components/reader/ChapterNav'
 import { ReaderSettings, ReaderTheme } from '@/components/reader/ReaderSettings'
+import { track } from '@/lib/analytics'
 
 const ratingColors: Record<string, string> = {
   'G': 'bg-green-100 text-green-800',
@@ -43,7 +44,11 @@ export default function WorkPage() {
   const [currentChapter, setCurrentChapter] = useState(0)
   const [theme, setTheme] = useState<ReaderTheme>('light')
 
-  const { data: work, isLoading: workLoading, error: workError } = useWork(workId)
+  const { data: work, isLoading: workLoading, error: workError } = useWork(workId, {
+    onSuccess: (data) => {
+      track({ type: 'work_opened', workId: data.id })
+    }
+  })
   const { data: chapters, isLoading: chaptersLoading, error: chaptersError } = useWorkChapters(workId)
 
   const formatDate = (dateString: string) => {
@@ -58,6 +63,16 @@ export default function WorkPage() {
     if (!count) return '0'
     if (count < 1000) return count.toString()
     return `${(count / 1000).toFixed(1)}k`
+  }
+
+  const handleChapterChange = (newChapterIndex: number) => {
+    setCurrentChapter(newChapterIndex)
+    track({ type: 'chapter_navigate', workId, to: newChapterIndex + 1 })
+  }
+
+  const handleThemeChange = (newTheme: ReaderTheme) => {
+    setTheme(newTheme)
+    track({ type: 'theme_changed', theme: newTheme })
   }
 
   if (workLoading) {
@@ -108,7 +123,7 @@ export default function WorkPage() {
               Назад к поиску
             </Link>
           </Button>
-          <ReaderSettings theme={theme} onThemeChange={setTheme} />
+          <ReaderSettings theme={theme} onThemeChange={handleThemeChange} />
         </div>
       </header>
 
@@ -126,7 +141,7 @@ export default function WorkPage() {
                 <ChapterNav
                   currentChapter={currentChapter}
                   totalChapters={chapters.length}
-                  onChapterChange={setCurrentChapter}
+                  onChapterChange={handleChapterChange}
                 />
               </div>
 

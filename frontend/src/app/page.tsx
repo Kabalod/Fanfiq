@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { DevTools } from '@/components/dev-tools'
 import { AlertCircle, Filter } from 'lucide-react'
 import { filtersToQuery, queryToFilters } from '@/lib/url-state'
+import { track } from '@/lib/analytics'
 
 export default function HomePage() {
   const router = useRouter()
@@ -25,6 +26,9 @@ export default function HomePage() {
 
   const { data, isLoading, error, isFetching } = useSearchWorks(filters, {
     keepPreviousData: true,
+    onSuccess: () => {
+      track({ type: 'search_submitted', query: filters.query, filters })
+    }
   })
 
   useEffect(() => {
@@ -34,11 +38,12 @@ export default function HomePage() {
   }, [filters, pathname, router])
 
   const handleSearch = () => {
-    setFilters(prev => ({
-      ...prev,
+    const newFilters = {
+      ...filters,
       query: searchQuery,
       page: 1,
-    }))
+    }
+    setFilters(newFilters)
   }
 
   const handlePageChange = (newPage: number) => {
