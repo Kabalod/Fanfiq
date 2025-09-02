@@ -159,3 +159,20 @@ export function useSearchWorksInfinite(
     ...options,
   })
 }
+
+// Autocomplete hook
+export function useAutocomplete(
+  type: 'tags' | 'fandoms',
+  query: string,
+  options?: Omit<UseQueryOptions<string[], Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: ['autocomplete', type, query],
+    queryFn: () => {
+      if (!query) return []
+      if (type === 'tags') return apiClient.getTags(query)
+      return apiClient.getFandoms(query)
+    },
+    ...options,
+  })
+}

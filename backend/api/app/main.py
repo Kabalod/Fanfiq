@@ -11,6 +11,8 @@ import json
 from typing import List
 from . import bookmarks
 from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
+from sqlalchemy import select
+from . import models
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
 
@@ -215,3 +217,19 @@ def get_chapter(work_id: int, number: int, db: Session = Depends(get_db)):
 @app.get("/api/v1/sites", response_model=SupportedSites)
 def get_supported_sites():
     return SupportedSites(sites=["ficbook", "authortoday"])
+
+@app.get("/api/v1/tags", response_model=List[str])
+def get_tags(q: str = "", db: Session = Depends(get_db)):
+    query = select(models.WorkTag.tag).distinct()
+    if q:
+        query = query.filter(models.WorkTag.tag.ilike(f"%{q}%"))
+    results = db.execute(query).scalars().all()
+    return results
+
+@app.get("/api/v1/fandoms", response_model=List[str])
+def get_fandoms(q: str = "", db: Session = Depends(get_db)):
+    query = select(models.WorkFandom.fandom).distinct()
+    if q:
+        query = query.filter(models.WorkFandom.fandom.ilike(f"%{q}%"))
+    results = db.execute(query).scalars().all()
+    return results

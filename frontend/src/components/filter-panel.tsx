@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useState } from 'react'
+import { AutocompleteInput } from './AutocompleteInput'
 
 interface FilterPanelProps {
   filters: SearchFilters
@@ -58,18 +59,16 @@ export function FilterPanel({
     onFiltersChange({ ...filters, [field]: newValues })
   }
 
-  const handleTagChange = (field: 'tags' | 'fandoms', input: string, setInput: (s:string)=>void) => {
-    if (!input.trim()) return
-    const currentValues = filters[field] || []
-    if (!currentValues.includes(input.trim())) {
-      onFiltersChange({ ...filters, [field]: [...currentValues, input.trim()] })
+  const handleTagAdd = (type: 'tags' | 'fandoms', value: string) => {
+    const current = filters[type] || []
+    if (!current.includes(value)) {
+      onFiltersChange({ ...filters, [type]: [...current, value] })
     }
-    setInput('')
   }
-  
-  const handleTagRemove = (field: 'tags' | 'fandoms', value: string) => {
-    const currentValues = filters[field] || []
-    onFiltersChange({ ...filters, [field]: currentValues.filter(v => v !== value) })
+
+  const handleTagRemove = (type: 'tags' | 'fandoms', value: string) => {
+    const current = filters[type] || []
+    onFiltersChange({ ...filters, [type]: current.filter((v) => v !== value) })
   }
 
   return (
@@ -187,43 +186,23 @@ export function FilterPanel({
         {/* Tags */}
         <div>
           <Label>Теги</Label>
-          <div className="flex gap-2">
-            <Input 
-              value={tagInput}
-              onChange={e => setTagInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleTagChange('tags', tagInput, setTagInput)}
-              placeholder="Добавить тег"
-            />
-            <Button onClick={() => handleTagChange('tags', tagInput, setTagInput)} variant="outline">Добавить</Button>
-          </div>
-          <div className="flex flex-wrap gap-1 mt-2">
-            {filters.tags?.map(tag => (
-              <Badge key={tag} variant="secondary" onClick={() => handleTagRemove('tags', tag)} className="cursor-pointer">
-                {tag} &times;
-              </Badge>
-            ))}
-          </div>
+          <AutocompleteInput
+            type="tags"
+            values={filters.tags || []}
+            onAdd={(value) => handleTagAdd('tags', value)}
+            onRemove={(value) => handleTagRemove('tags', value)}
+          />
         </div>
         
         {/* Fandoms */}
         <div>
           <Label>Фандомы</Label>
-          <div className="flex gap-2">
-            <Input 
-              value={fandomInput}
-              onChange={e => setFandomInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleTagChange('fandoms', fandomInput, setFandomInput)}
-              placeholder="Добавить фандом"
-            />
-            <Button onClick={() => handleTagChange('fandoms', fandomInput, setFandomInput)} variant="outline">Добавить</Button>
-          </div>
-          <div className="flex flex-wrap gap-1 mt-2">
-            {filters.fandoms?.map(fandom => (
-              <Badge key={fandom} variant="secondary" onClick={() => handleTagRemove('fandoms', fandom)} className="cursor-pointer">
-                {fandom} &times;
-              </Badge>
-            ))}
-          </div>
+          <AutocompleteInput
+            type="fandoms"
+            values={filters.fandoms || []}
+            onAdd={(value) => handleTagAdd('fandoms', value)}
+            onRemove={(value) => handleTagRemove('fandoms', value)}
+          />
         </div>
         
         {/* Sort */}
