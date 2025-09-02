@@ -10,7 +10,7 @@ from .cache import make_search_cache_key, cache_get, cache_set
 import os
 import json
 from typing import List
-from . import bookmarks, users, authors, history
+from . import bookmarks, users, authors, history, works
 from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
 from sqlalchemy import select
 from . import models
@@ -52,6 +52,7 @@ app.include_router(
     tags=["users"],
 )
 app.include_router(authors.router, prefix="/authors", tags=["authors"])
+app.include_router(works.router, prefix="/works", tags=["works"])
 
 app.include_router(bookmarks.router, prefix="/bookmarks", tags=["bookmarks"])
 app.include_router(history.router, prefix="/history", tags=["history"])
