@@ -1,6 +1,20 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, Index, UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .base import Base
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    Float,
+    DateTime,
+    ForeignKey,
+    Enum,
+    Boolean,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
+from sqlalchemy.sql import func
+import enum
+
+Base = declarative_base()
 
 
 class Site(Base):
@@ -89,6 +103,24 @@ class WorkWarning(Base):
     warning: Mapped[str] = mapped_column(String(200), index=True)
 
     work: Mapped[Work] = relationship("Work", back_populates="warnings")
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    bookmarks = relationship("Bookmark", back_populates="user")
+
+class Bookmark(Base):
+    __tablename__ = "bookmarks"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    user = relationship("User", back_populates="bookmarks")
+    work = relationship("Work")
 
 
 # Индексы для ускорения поиска/сортировок
