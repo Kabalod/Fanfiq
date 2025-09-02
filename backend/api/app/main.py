@@ -155,6 +155,9 @@ def crawl(payload: dict):
         elif site == 'fanficsme':
             from parsers.fanficsme.worker import fanficsme_flow
             flow = fanficsme_flow
+        elif site == 'ao3':
+            from parsers.ao3.worker import ao3_flow
+            flow = ao3_flow
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported site: {site}")
     except ImportError:
