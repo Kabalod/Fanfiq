@@ -205,6 +205,28 @@ export function FilterPanel({
           />
         </div>
         
+        {/* Include Tags */}
+        <div>
+          <Label>Включить теги</Label>
+          <AutocompleteInput
+            type="tags"
+            values={filters.include_tags || []}
+            onAdd={(value) => onFiltersChange({ ...filters, include_tags: [...(filters.include_tags || []), value] })}
+            onRemove={(value) => onFiltersChange({ ...filters, include_tags: (filters.include_tags || []).filter(v => v !== value) })}
+          />
+        </div>
+
+        {/* Exclude Tags */}
+        <div>
+          <Label>Исключить теги</Label>
+          <AutocompleteInput
+            type="tags"
+            values={filters.exclude_tags || []}
+            onAdd={(value) => onFiltersChange({ ...filters, exclude_tags: [...(filters.exclude_tags || []), value] })}
+            onRemove={(value) => onFiltersChange({ ...filters, exclude_tags: (filters.exclude_tags || []).filter(v => v !== value) })}
+          />
+        </div>
+
         {/* Sort */}
         <div className="grid grid-cols-2 gap-4">
           <div>

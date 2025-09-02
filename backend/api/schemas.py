@@ -53,3 +53,7 @@ class Author(BaseModel):
 
     class Config:
         orm_mode = True
+
+class SearchFilters(BaseModel):
+    include_tags: Optional[List[str]] = None
+    exclude_tags: Optional[List[str]] = None

@@ -45,6 +45,14 @@ def build_search_query(filters: SearchFilters) -> Tuple[str, dict]:
         clauses.append("EXISTS (SELECT 1 FROM work_warnings ww WHERE ww.work_id = works.id AND ww.warning = ANY(:warnings))")
         params["warnings"] = filters.warnings
 
+    if filters.include_tags:
+        clauses.append("id IN (SELECT work_id FROM work_tags WHERE tag = ANY(:include_tags))")
+        params['include_tags'] = filters.include_tags
+
+    if filters.exclude_tags:
+        clauses.append("id NOT IN (SELECT work_id FROM work_tags WHERE tag = ANY(:exclude_tags))")
+        params['exclude_tags'] = filters.exclude_tags
+
     where_sql = (" WHERE " + " AND ".join(clauses)) if clauses else ""
 
     sort_map = {
