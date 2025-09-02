@@ -38,6 +38,9 @@ The project is configured for seamless deployment on Railway.
     *   **workers:**
         *   Root Directory: `.`
         *   Dockerfile Path: `workers/Dockerfile`
+    *   **parsers/ficbook, parsers/authortoday, parsers/litnet:**
+        *   Root Directory: `.`
+        *   Dockerfile Path: `parsers/{service_name}/Dockerfile`
     *   **frontend:**
         *   Root Directory: `frontend`
         *   Dockerfile Path: `Dockerfile`
@@ -48,7 +51,7 @@ The project is configured for seamless deployment on Railway.
 *   **Monorepo:** A single repository containing all services.
 *   **Services:**
     *   `api`: FastAPI backend providing a JSON API.
-    *   `workers`: Prefect workers for background parsing jobs.
+    *   `parsers/*`: Independent Prefect worker services for each supported site.
     *   `frontend`: Next.js (app router) with TypeScript and Tailwind CSS.
 *   **Data Stores:**
     *   PostgreSQL: Main database with Full-Text Search extensions.
@@ -70,4 +73,4 @@ The project is configured for seamless deployment on Railway.
 *   **FastAPI:** Modern, fast web framework for building APIs.
 *   **SQLAlchemy & Alembic:** ORM and database migrations.
 *   **Prefect:** Modern dataflow orchestration for parsing jobs.
-*   **Parsers:** Ficbook and Author.Today parsers with support for authentication.
+*   **Parsers:** Ficbook, Author.Today, and Litnet parsers with support for authentication.

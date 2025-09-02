@@ -11,6 +11,7 @@ This document provides detailed instructions for developers working on the Fanfi
     *   Run `docker compose -f infra/docker-compose.yml up -d` to start PostgreSQL and Redis.
     *   Install frontend dependencies: `cd frontend && npm install`.
     *   Install backend dependencies: `pip install -r backend/api/requirements.txt`.
+    *   Install parser dependencies: `pip install -r parsers/ficbook/requirements.txt`, etc. for each parser.
 
 ## Backend Development
 
@@ -19,8 +20,9 @@ This document provides detailed instructions for developers working on the Fanfi
     alembic -c backend/api/alembic.ini upgrade head
     uvicorn backend.api.app.main:app --host 127.0.0.1 --port 58090 --reload
     ```
-*   **Running Workers (Prefect):**
-    *   See Prefect's documentation for setting up a local agent. The flows are defined in `backend/flows/prefect_flows.py`.
+*   **Running Parser Workers (Prefect):**
+    *   Each parser is a separate service. To run one locally, you'll need to start a Prefect agent pointing to the correct pool (e.g., `ficbook-pool`).
+    *   The flows are defined in `parsers/{service_name}/worker.py`.
 *   **Database Migrations:**
     *   Modify SQLAlchemy models in `backend/api/db/models.py`.
     *   Generate a new migration: `alembic -c backend/api/alembic.ini revision --autogenerate -m "Your migration message"`.
@@ -53,11 +55,11 @@ The project is configured for a multi-service deployment on Railway.
     *   **Root Directory:** `.`
     *   **Dockerfile Path:** `Dockerfile`
     *   **Start Command:** (Optional, defined in Dockerfile) `sh -lc "PYTHONPATH=/app python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-58090}"`
-2.  **workers (Prefect):**
+2.  **parsers/ficbook, parsers/authortoday, parsers/litnet:**
     *   **Builder:** Dockerfile
     *   **Root Directory:** `.`
-    *   **Dockerfile Path:** `workers/Dockerfile`
-    *   **Start Command:** Your Prefect agent start command.
+    *   **Dockerfile Path:** `parsers/{service_name}/Dockerfile`
+    *   **Start Command:** (Defined in Dockerfile, e.g., `prefect worker start --pool litnet-pool`)
 3.  **frontend (Next.js):**
     *   **Builder:** Dockerfile
     *   **Root Directory:** `frontend`
@@ -66,7 +68,7 @@ The project is configured for a multi-service deployment on Railway.
 ### Environment Variables
 
 *   All services require `DATABASE_URL` and `REDIS_URL` linked from the Railway plugins.
-*   `api` and `workers` require `PYTHONPATH=/app`.
+*   `api` and parser services require `PYTHONPATH=/app`.
 *   `api` requires `ALLOWED_ORIGINS` set to the public URL of the frontend service.
 *   `frontend` requires `NEXT_PUBLIC_API_URL` set to the public URL of the api service.
 
