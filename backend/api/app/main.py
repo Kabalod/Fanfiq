@@ -1,20 +1,46 @@
-import sentry_sdk
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from .models import SearchFilters, SearchResponse, Work, Chapter, SupportedSites, Author
-from ..db.session import SessionLocal
-from .search import execute_search
-from .cache import make_search_cache_key, cache_get, cache_set
-import os
-import json
-from typing import List
-from . import bookmarks, users, authors, history, works
-from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
-from sqlalchemy import select
-from . import models
-from .logging import log_requests
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
+log.info("Starting main.py")
+try:
+    import sentry_sdk
+    log.info("Imported sentry_sdk")
+    from fastapi import FastAPI, Depends, HTTPException
+    log.info("Imported FastAPI, Depends, HTTPException")
+    from fastapi.middleware.cors import CORSMiddleware
+    log.info("Imported CORSMiddleware")
+    from sqlalchemy.orm import Session
+    log.info("Imported Session")
+    from sqlalchemy import text
+    log.info("Imported text")
+    from .models import SearchFilters, SearchResponse, Work, Chapter, SupportedSites, Author
+    log.info("Imported models")
+    from ..db.session import SessionLocal
+    log.info("Imported SessionLocal")
+    from .search import execute_search
+    log.info("Imported execute_search")
+    from .cache import make_search_cache_key, cache_get, cache_set
+    log.info("Imported cache")
+    import os
+    log.info("Imported os")
+    import json
+    log.info("Imported json")
+    from typing import List
+    log.info("Imported List")
+    from . import bookmarks, users, authors, history, works
+    log.info("Imported routers")
+    from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
+    log.info("Imported fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate")
+    from sqlalchemy import select
+    log.info("Imported select")
+    from . import models
+    log.info("Imported models")
+    from .logging import log_requests
+    log.info("Imported log_requests")
+except Exception as e:
+    log.error(f"Error during imports: {e}")
+    raise
 
 SENTRY_DSN = "YOUR_SENTRY_DSN" # TODO: Move to env
 
