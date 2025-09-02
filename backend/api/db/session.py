@@ -1,6 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from .get_async_session import get_async_session
 
 
 def _normalize_postgres_dsn(url: str) -> str:
@@ -27,3 +28,10 @@ DATABASE_URL = _normalize_postgres_dsn(
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
