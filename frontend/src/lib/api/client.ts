@@ -176,3 +176,16 @@ export function useAutocomplete(
     ...options,
   })
 }
+
+// Author Detail hook
+export function useAuthor(
+  authorId: string,
+  options?: Omit<UseQueryOptions<AuthorDetail, Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery({
+    queryKey: ['authors', authorId],
+    queryFn: () => apiClient.getAuthor(authorId),
+    enabled: !!authorId,
+    ...options,
+  })
+}
