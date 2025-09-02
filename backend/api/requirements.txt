@@ -14,3 +14,4 @@ prefect==2.14.10
 fastapi-users[sqlalchemy]==14.0.1
 passlib[bcrypt]==1.7.4
 python-jose==3.5.0
+sentry-sdk[fastapi]
