@@ -2,6 +2,10 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .get_async_session import get_async_session
+from fastapi import Depends
+from fastapi_users.db import SQLAlchemyUserDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
+from .models import User
 
 
 def _normalize_postgres_dsn(url: str) -> str:
@@ -35,3 +39,6 @@ def get_db():
         yield db
     finally:
         db.close()
+
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
