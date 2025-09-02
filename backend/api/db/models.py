@@ -67,6 +67,7 @@ class Work(Base):
     fandoms: Mapped[list["WorkFandom"]] = relationship("WorkFandom", back_populates="work", cascade="all, delete-orphan")
     tags: Mapped[list["WorkTag"]] = relationship("WorkTag", back_populates="work", cascade="all, delete-orphan")
     warnings: Mapped[list["WorkWarning"]] = relationship("WorkWarning", back_populates="work", cascade="all, delete-orphan")
+    reading_history: Mapped[list["ReadingHistory"]] = relationship("ReadingHistory", back_populates="work")
 
 
 class Chapter(Base):
@@ -79,6 +80,7 @@ class Chapter(Base):
     content_html: Mapped[str] = mapped_column(Text)
 
     work: Mapped[Work] = relationship("Work", back_populates="chapters")
+    reading_history: Mapped[list["ReadingHistory"]] = relationship("ReadingHistory", back_populates="chapter")
 
 
 class WorkFandom(Base):
@@ -111,11 +113,19 @@ class WorkWarning(Base):
     work: Mapped[Work] = relationship("Work", back_populates="warnings")
 
 
+class ReadingHistory(Base):
+    __tablename__ = "reading_history"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    work_id = Column(Integer, ForeignKey("works.id"), nullable=False)
+    chapter_id = Column(Integer, ForeignKey("chapters.id"), nullable=False)
+    progress = Column(Float, default=0.0)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
 class User(Base, SQLAlchemyBaseUserTable[int]):
     id: Mapped[int] = mapped_column(primary_key=True)
-
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
+    reading_history: Mapped[list["ReadingHistory"]] = relationship("ReadingHistory", back_populates="user")
 
 
 # Индексы для ускорения поиска/сортировок

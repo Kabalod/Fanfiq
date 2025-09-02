@@ -57,3 +57,18 @@ class Author(BaseModel):
 class SearchFilters(BaseModel):
     include_tags: Optional[List[str]] = None
     exclude_tags: Optional[List[str]] = None
+
+class ReadingHistoryBase(BaseModel):
+    work_id: int
+    chapter_id: int
+    progress: float
+
+class ReadingHistoryCreate(ReadingHistoryBase):
+    pass
+
+class ReadingHistory(ReadingHistoryBase):
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
