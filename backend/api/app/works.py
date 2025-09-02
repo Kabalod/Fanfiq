@@ -3,7 +3,7 @@ from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 import html2text
 
-from .. import models
+from ..db import models
 from ..db.session import get_db
 
 router = APIRouter()

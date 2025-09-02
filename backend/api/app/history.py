@@ -4,8 +4,6 @@ from typing import List
 
 from ..db import models
 from .. import schemas
-from ..db.session import get_db
-from .users import current_active_user
 
 router = APIRouter()
 
