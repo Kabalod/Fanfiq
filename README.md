@@ -73,4 +73,4 @@ The project is configured for seamless deployment on Railway.
 *   **FastAPI:** Modern, fast web framework for building APIs.
 *   **SQLAlchemy & Alembic:** ORM and database migrations.
 *   **Prefect:** Modern dataflow orchestration for parsing jobs.
-*   **Parsers:** Ficbook, Author.Today, Litnet, and Fanfics.me parsers with support for authentication.
+*   **Parsers:** Ficbook, Author.Today, Litnet, Fanfics.me, and AO3 parsers with support for authentication.
