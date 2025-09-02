@@ -55,11 +55,11 @@ The project is configured for a multi-service deployment on Railway.
     *   **Root Directory:** `.`
     *   **Dockerfile Path:** `Dockerfile`
     *   **Start Command:** (Optional, defined in Dockerfile) `sh -lc "PYTHONPATH=/app python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-58090}"`
-2.  **parsers/ficbook, parsers/authortoday, parsers/litnet:**
+2.  **parsers/ficbook, parsers/authortoday, parsers/litnet, parsers/fanficsme:**
     *   **Builder:** Dockerfile
     *   **Root Directory:** `.`
     *   **Dockerfile Path:** `parsers/{service_name}/Dockerfile`
-    *   **Start Command:** (Defined in Dockerfile, e.g., `prefect worker start --pool litnet-pool`)
+    *   **Start Command:** (Defined in Dockerfile, e.g., `prefect worker start --pool fanficsme-pool`)
 3.  **frontend (Next.js):**
     *   **Builder:** Dockerfile
     *   **Root Directory:** `frontend`
