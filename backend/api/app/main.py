@@ -1,3 +1,4 @@
+import sentry_sdk
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -14,6 +15,14 @@ from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
 from sqlalchemy import select
 from . import models
 from .logging import log_requests
+
+SENTRY_DSN = "YOUR_SENTRY_DSN" # TODO: Move to env
+
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
 
