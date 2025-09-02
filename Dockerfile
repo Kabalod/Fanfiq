@@ -24,9 +24,9 @@ RUN if [ -f /app/backend/api/requirements.txt ]; then \
 # 6. Expose API port
 EXPOSE 58090
 
-# 7. Start API
+# 7. Start API (expand $PORT on Railway)
 WORKDIR /app
-CMD ["python", "-m", "uvicorn", "backend.api.app.main:app", "--host", "0.0.0.0", "--port", "58090"]
+CMD ["sh", "-lc", "python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-58090}"]
 
 
 
