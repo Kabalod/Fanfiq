@@ -12,16 +12,16 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 # Copy package files with different approach
-COPY --chown=nextjs:nodejs frontend/package*.json ./
+COPY --chown=nextjs:nodejs ../frontend/package*.json ./
 
 # Switch to app user for npm operations
 USER nextjs
 
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 # Copy source code
-COPY --chown=nextjs:nodejs frontend/ .
+COPY --chown=nextjs:nodejs ../frontend/ .
 
 # Build application
 RUN npm run build
