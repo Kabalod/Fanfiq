@@ -46,3 +46,4 @@ logs/
 
 # Misc
 .storybook-cache/
+frontend/package-lock.json
