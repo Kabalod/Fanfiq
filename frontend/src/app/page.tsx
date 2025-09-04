@@ -36,27 +36,16 @@ export default function HomePage() {
 
   const { ref, inView } = useInView()
 
-  const {
-    data,
-    error,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = useSearchWorksInfinite(filters, {
-    keepPreviousData: true,
-  })
-
-  useHotkeys({
-    '/': (e) => {
-      e.preventDefault()
-      document.querySelector<HTMLInputElement>('input[type="search"]')?.focus()
-    },
-    'f': (e) => {
-      e.preventDefault()
-      setShowFilters(prev => !prev)
-    }
-  })
+  // useHotkeys({
+  //     '/': (e) => {
+  //         e.preventDefault()
+  //         document.querySelector<HTMLInputElement>('input[type="search"]')?.focus()
+  //     },
+  //     'f': (e) => {
+  //         e.preventDefault()
+  //         setShowFilters(prev => !prev)
+  //     }
+  // })
 
   useEffect(() => {
     const newQueryString = filtersToQuery(filters).toString()
