@@ -2,8 +2,8 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = '0003_unique_site_work'
-down_revision = '0002_fts_indexes'
+revision = '0003'
+down_revision = '0002'
 branch_labels = None
 depends_on = None
 

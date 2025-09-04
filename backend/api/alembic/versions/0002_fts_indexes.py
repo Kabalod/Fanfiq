@@ -1,8 +1,8 @@
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '0002_fts_indexes'
-down_revision = '0001_init_schema'
+revision = '0002'
+down_revision = '0001'
 branch_labels = None
 depends_on = None
 
