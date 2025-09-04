@@ -1,45 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-
-interface Props {
-  type: 'tags' | 'fandoms'
-  values: string[]
-  onAdd: (value: string) => void
-  onRemove: (value: string) => void
-}
-
-export function AutocompleteInput({ values, onAdd, onRemove }: Props) {
-  const [value, setValue] = useState('')
-
-  const handleAdd = () => {
-    const v = value.trim()
-    if (!v) return
-    onAdd(v)
-    setValue('')
-  }
-
-  return (
-    <div className="space-y-2">
-      <div className="flex gap-2">
-        <Input value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAdd()} />
-        <button type="button" className="px-3 py-2 rounded bg-primary text-primary-foreground" onClick={handleAdd}>Добавить</button>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {values.map((v) => (
-          <Badge key={v} variant="secondary" className="cursor-pointer" onClick={() => onRemove(v)}>
-            {v}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-'use client'
-
-import { useState } from 'react'
 import { useAutocomplete } from '@/lib/api/client'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -57,10 +17,10 @@ export function AutocompleteInput({ type, values, onAdd, onRemove }: Autocomplet
   const { data: suggestions } = useAutocomplete(type, inputValue)
 
   const handleAdd = () => {
-    if (inputValue) {
-      onAdd(inputValue)
-      setInputValue('')
-    }
+    const v = inputValue.trim()
+    if (!v) return
+    onAdd(v)
+    setInputValue('')
   }
 
   return (
