@@ -1,9 +1,6 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
-
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useInView } from 'react-intersection-observer'
 import { SearchBar } from '@/components/search-bar'
@@ -23,7 +20,7 @@ const FilterPanel = dynamic(() => import('@/components/filter-panel').then(mod =
   loading: () => <p>Загрузка фильтров...</p>
 })
 
-export default function HomePage() {
+function SearchPage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -36,16 +33,27 @@ export default function HomePage() {
 
   const { ref, inView } = useInView()
 
-  // useHotkeys({
-  //     '/': (e) => {
-  //         e.preventDefault()
-  //         document.querySelector<HTMLInputElement>('input[type="search"]')?.focus()
-  //     },
-  //     'f': (e) => {
-  //         e.preventDefault()
-  //         setShowFilters(prev => !prev)
-  //     }
-  // })
+  const {
+    data,
+    error,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useSearchWorksInfinite(filters, {
+    keepPreviousData: true,
+  })
+
+  useHotkeys({
+    '/': (e) => {
+      e.preventDefault()
+      document.querySelector<HTMLInputElement>('input[type="search"]')?.focus()
+    },
+    'f': (e) => {
+      e.preventDefault()
+      setShowFilters(prev => !prev)
+    }
+  })
 
   useEffect(() => {
     const newQueryString = filtersToQuery(filters).toString()
@@ -163,5 +171,13 @@ export default function HomePage() {
       
       <DevTools />
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<p>Загрузка...</p>}>
+      <SearchPage />
+    </Suspense>
   )
 }
