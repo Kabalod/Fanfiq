@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
 
+# Add current directory to sys.path
+sys.path.append('.')
+
 # Add project root to sys.path
 root_dir = Path(__file__).resolve().parents[2]
 sys.path.append(str(root_dir))
