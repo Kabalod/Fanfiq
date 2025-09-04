@@ -36,8 +36,10 @@ RUN pip install --no-cache-dir structlog==25.4.0
 
 # Copy backend code
 COPY backend/ ./backend/
+COPY run.sh .
 
 # Set proper permissions
+RUN chmod +x run.sh
 RUN chown -R appuser:appuser /app
 USER appuser
 
@@ -49,4 +51,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE ${PORT:-8000}
 
 # Start application
-CMD ["sh", "-c", "cd /app/backend/api && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["./run.sh"]
