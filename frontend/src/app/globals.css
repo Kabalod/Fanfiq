@@ -101,7 +101,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* No-op, 'border-border' is not a valid utility */
   }
   body {
     @apply bg-background text-foreground;
