@@ -8,6 +8,10 @@ depends_on = None
 
 
 def upgrade() -> None:
+    # Устанавливаем расширения
+    op.execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
+    op.execute('CREATE EXTENSION IF NOT EXISTS pg_trgm;')
+    
     # Обёртка IMMUTABLE вокруг unaccent(dict, text)
     op.execute(
         """
