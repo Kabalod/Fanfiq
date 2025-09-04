@@ -2,7 +2,7 @@
 FROM python:3.12.0-slim
 
 # Force complete cache bust
-ENV CACHE_BUSTER_ROOT_LEVEL=20250104_084000
+ENV CACHE_BUSTER_ROOT_LEVEL=20250104_085000
 RUN echo "Root level build: $CACHE_BUSTER_ROOT_LEVEL"
 
 # Install system dependencies
@@ -27,8 +27,18 @@ ENV PYTHONUNBUFFERED=1
 
 # Copy and install requirements
 COPY backend/api/requirements.txt .
+
+# Install setuptools and create distutils
 RUN pip install --no-cache-dir setuptools wheel
+RUN python -c "import setuptools; print('setuptools installed')"
 RUN pip install --no-cache-dir --upgrade pip
+
+# Create distutils if missing
+RUN python -c "import sys; sys.path.insert(0, '/usr/lib/python3.12'); import distutils" || \
+    (apt-get update && apt-get install -y python3-distutils-extra && \
+     ln -sf /usr/lib/python3/dist-packages/distutils /usr/local/lib/python3.12/site-packages/distutils)
+
+# Install requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Ensure structlog is available
