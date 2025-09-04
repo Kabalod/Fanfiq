@@ -6,9 +6,15 @@ set -e
 # Set python path to allow imports from project root
 export PYTHONPATH=/app
 
+# Change to the API directory to run migrations
+cd /app/backend/api
+
 # Run alembic migrations
 echo "Running Alembic migrations..."
-alembic -c /app/backend/api/alembic.ini upgrade head
+alembic upgrade head
+
+# Change back to the root directory
+cd /app
 
 # Start Uvicorn server
 echo "Starting Uvicorn server..."
