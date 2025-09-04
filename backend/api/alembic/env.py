@@ -13,8 +13,8 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-from db.base import Base
-from db import models  # noqa: F401
+from backend.api.db.base import Base
+from backend.api.db import models  # noqa: F401
 
 config = context.config
 

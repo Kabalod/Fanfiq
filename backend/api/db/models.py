@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from .base import Base
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from ..db.get_async_session import get_async_session
+from backend.api.db.get_async_session import get_async_session
 
 Base = declarative_base()
 
