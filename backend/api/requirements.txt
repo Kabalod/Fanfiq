@@ -10,7 +10,8 @@ requests==2.32.3
 beautifulsoup4==4.12.3
 celery==5.4.0
 pytest==8.3.3
-prefect==2.14.10
+# prefect==2.14.10  # Temporarily disabled due to pendulum dependency issues
+# Use alternative task scheduling if needed
 fastapi-users[sqlalchemy]==14.0.1
 passlib[bcrypt]==1.7.4
 python-jose==3.5.0
