@@ -1,40 +1,30 @@
-# Production Dockerfile for Fanfiq Frontend
-FROM node:20-alpine AS builder
+# Railway Frontend Service - Fresh Build v3
+FROM node:20-alpine
+
+# Create cache busting
+ENV BUILD_CACHE_BUSTER=20250104_092000
+RUN echo "Fresh build: $BUILD_CACHE_BUSTER"
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY frontend/package*.json ./
+# Create app user first
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
+
+# Copy package files with different approach
+COPY --chown=nextjs:nodejs frontend/package*.json ./
+
+# Switch to app user for npm operations
+USER nextjs
 
 # Install dependencies
-RUN npm ci
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy source code
-COPY frontend/ .
+COPY --chown=nextjs:nodejs frontend/ .
 
 # Build application
 RUN npm run build
-
-# Production stage
-FROM node:20-alpine AS runner
-
-# Set working directory
-WORKDIR /app
-
-# Create app user
-RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
-
-# Copy built application
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-# Change ownership
-RUN chown -R nextjs:nodejs /app
-
-# Switch to app user
-USER nextjs
 
 # Set environment
 ENV NODE_ENV=production
@@ -49,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE ${PORT:-3000}
 
 # Start command
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
