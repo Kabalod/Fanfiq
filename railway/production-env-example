@@ -1,0 +1,45 @@
+# Railway Production Environment Variables
+# Copy this to Railway service variables
+
+# Database (Railway PostgreSQL)
+DATABASE_URL=${DATABASE_URL}
+
+# Redis (Railway Redis)
+REDIS_URL=${REDIS_URL}
+
+# API Configuration
+PORT=${PORT:-8000}
+PYTHONPATH=/app
+EXTERNAL_API_URL=https://${RAILWAY_STATIC_URL}
+
+# Frontend Configuration
+NEXT_PUBLIC_API_URL=https://${RAILWAY_STATIC_URL}
+NODE_ENV=production
+
+# Workers Configuration
+CELERY_BROKER_URL=${REDIS_URL}
+CELERY_RESULT_BACKEND=${REDIS_URL}
+
+# Prefect Configuration
+PREFECT_API_URL=${PREFECT_API_URL}
+PREFECT_SUBMIT=1
+
+# Security
+SECRET_KEY=${SECRET_KEY}
+SENTRY_DSN=${SENTRY_DSN}
+
+# Application Settings
+DEBUG=False
+LOG_LEVEL=INFO
+
+# CORS
+ALLOWED_ORIGINS=["https://*.railway.app", "https://*.vercel.app"]
+
+# Cache Settings
+SEARCH_CACHE_TTL=300
+
+# Worker Settings
+CRAWL_RATE=1000
+SCRAPER_TIMEOUT=30
+SCRAPER_RETRY=3
+SCRAPER_BACKOFF_MS=500

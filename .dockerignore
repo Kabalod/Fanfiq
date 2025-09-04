@@ -1,0 +1,107 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.next/
+out/
+.nuxt/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Documentation
+README.md
+DEVELOPMENT.md
+PROJECT_SUMMARY.md
+*.md
+docs/
+
+# Test files
+test_*.json
+*_test.py
+tests/
+*/tests/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Frontend build artifacts
+frontend/.next/
+frontend/out/
+components_frontend/
+
+# Database
+*.db
+*.sqlite3
+
+# Source files
+sorce/
+
+# Lock files (will be copied explicitly if needed)
+package-lock.json
+pnpm-lock.yaml
+Pipfile.lock

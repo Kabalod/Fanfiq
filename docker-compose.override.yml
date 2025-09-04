@@ -1,0 +1,109 @@
+version: "3.9"
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fanfiq-api
+    ports:
+      - "${PORT:-58090}:58090"
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql+psycopg://fanfiq:fanfiq_password@postgres:5432/fanfiq
+      - REDIS_URL=redis://redis:6379/0
+      - EXTERNAL_API_URL=http://localhost:58090
+      - PREFECT_SUBMIT=0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/backend/__pycache__
+      - /app/backend/api/__pycache__
+    command: ["sh", "-lc", "python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port 58090 --reload"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:58090/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles: ["dev"]
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fanfiq-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:58090
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: ["npm", "run", "dev"]
+    profiles: ["dev"]
+
+  # Workers Service
+  workers:
+    build:
+      context: .
+      dockerfile: workers/Dockerfile
+    container_name: fanfiq-workers
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql+psycopg://fanfiq:fanfiq_password@postgres:5432/fanfiq
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://fanfiq:rabbitmq_password@rabbitmq:5672//
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/backend/__pycache__
+    command: ["celery", "-A", "backend.workers.celery_app:app", "worker", "-Q", "crawl,normalize", "-l", "info", "--concurrency", "2"]
+    profiles: ["dev"]
+
+  # Parsers (example for one parser - can be extended)
+  ficbook-parser:
+    build:
+      context: .
+      dockerfile: parsers/ficbook/Dockerfile
+    container_name: fanfiq-ficbook-parser
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_URL=postgresql+psycopg://fanfiq:fanfiq_password@postgres:5432/fanfiq
+      - REDIS_URL=redis://redis:6379/0
+      - PREFECT_API_URL=http://prefect:4200/api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/parsers/ficbook/__pycache__
+    profiles: ["parsers"]
+
+  # Development tools
+  prefect-server:
+    image: prefecthq/prefect:2-latest
+    container_name: fanfiq-prefect
+    ports:
+      - "4200:4200"
+    environment:
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+psycopg://fanfiq:fanfiq_password@postgres:5432/fanfiq
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["prefect", "server", "start", "--host", "0.0.0.0", "--port", "4200"]
+    profiles: ["dev"]

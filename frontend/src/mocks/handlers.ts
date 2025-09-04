@@ -15,9 +15,9 @@ const generateMockWork = (id: number): Work => ({
     }
   ],
   summary: `Это описание тестового фанфика номер ${id}. Здесь может быть довольно длинный текст с описанием сюжета, персонажей и основных событий истории.`,
-  rating: ['G', 'PG-13', 'R', 'NC-17', 'NC-21'][id % 5] as any,
-  category: ['gen', 'het', 'slash', 'femslash', 'mixed'][id % 5] as any,
-  status: ['completed', 'in_progress', 'frozen'][id % 3] as any,
+  rating: ['G', 'PG-13', 'R', 'NC-17', 'NC-21'][id % 5] as 'G' | 'PG-13' | 'R' | 'NC-17' | 'NC-21',
+  category: ['gen', 'het', 'slash', 'femslash', 'mixed'][id % 5] as 'gen' | 'het' | 'slash' | 'femslash' | 'mixed',
+  status: ['completed', 'in_progress', 'frozen'][id % 3] as 'completed' | 'in_progress' | 'frozen',
   language: 'ru',
   word_count: Math.floor(Math.random() * 100000) + 1000,
   chapter_count: Math.floor(Math.random() * 50) + 1,
@@ -45,7 +45,7 @@ const generateMockWork = (id: number): Work => ({
 export const handlers = [
   // Поиск работ
   http.post('/api/v1/works/search', async ({ request }) => {
-    const body = await request.json() as any
+    const body = await request.json() as Record<string, unknown>
     const page = body.page || 1
     const pageSize = body.page_size || 20
     const query = body.query || ''
@@ -214,7 +214,7 @@ export const handlers = [
   
   // Запуск парсинга
   http.post('/api/v1/crawl', async ({ request }) => {
-    const body = await request.json() as any
+    const body = await request.json() as Record<string, unknown>
 
     return HttpResponse.json({
       task_id: `task-${Date.now()}`,

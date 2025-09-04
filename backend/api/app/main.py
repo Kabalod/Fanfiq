@@ -30,7 +30,8 @@ try:
     log.info("Imported List")
     from . import bookmarks, users, authors, history, works
     log.info("Imported routers")
-    from .users import fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate
+    from .users import fastapi_users, auth_backend
+    from ..schemas import UserRead, UserCreate, UserUpdate
     log.info("Imported fastapi_users, auth_backend, UserRead, UserCreate, UserUpdate")
     from sqlalchemy import select
     log.info("Imported select")
@@ -42,13 +43,14 @@ except Exception as e:
     log.error(f"Error during imports: {e}")
     raise
 
-SENTRY_DSN = "YOUR_SENTRY_DSN" # TODO: Move to env
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
-sentry_sdk.init(
-    dsn=SENTRY_DSN,
-    traces_sample_rate=1.0,
-    profiles_sample_rate=1.0,
-)
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 app = FastAPI(title="Fanfiq API", version="0.1.0")
 

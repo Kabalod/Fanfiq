@@ -233,7 +233,7 @@ export function FilterPanel({
             <Label>Сортировать по</Label>
             <Select
               value={filters.sort_by || 'relevance'}
-              onValueChange={(value) => onFiltersChange({ ...filters, sort_by: value as any })}
+              onValueChange={(value) => onFiltersChange({ ...filters, sort_by: value as 'relevance' | 'updated' | 'created' | 'title' | 'kudos' | 'comments' | 'word_count' })}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -249,7 +249,7 @@ export function FilterPanel({
             <Label>Порядок</Label>
             <Select
               value={filters.sort_order || 'desc'}
-              onValueChange={(value) => onFiltersChange({ ...filters, sort_order: value as any })}
+              onValueChange={(value) => onFiltersChange({ ...filters, sort_order: value as 'asc' | 'desc' })}
             >
               <SelectTrigger>
                 <SelectValue />
