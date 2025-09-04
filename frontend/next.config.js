@@ -1,10 +1,22 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your existing Next.js config
+  output: 'standalone',
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
+  },
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+// Only use bundle analyzer in development/analysis mode
+if (process.env.ANALYZE === 'true') {
+  try {
+    const withBundleAnalyzer = require('@next/bundle-analyzer')({
+      enabled: true,
+    })
+    module.exports = withBundleAnalyzer(nextConfig)
+  } catch (error) {
+    console.warn('Bundle analyzer not available, skipping...')
+    module.exports = nextConfig
+  }
+} else {
+  module.exports = nextConfig
+}
