@@ -2,7 +2,7 @@
 FROM python:3.12.0-slim
 
 # Force complete cache bust
-ENV CACHE_BUSTER_ROOT_LEVEL=20250104_082000
+ENV CACHE_BUSTER_ROOT_LEVEL=20250104_083000
 RUN echo "Root level build: $CACHE_BUSTER_ROOT_LEVEL"
 
 # Install system dependencies
@@ -26,7 +26,8 @@ ENV PYTHONUNBUFFERED=1
 
 # Copy and install requirements
 COPY backend/api/requirements.txt .
-RUN pip install --no-cache-dir setuptools
+RUN pip install --no-cache-dir setuptools wheel
+RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Ensure structlog is available
