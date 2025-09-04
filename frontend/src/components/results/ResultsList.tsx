@@ -2,7 +2,7 @@
 
 import { Work } from '@/lib/api/schemas'
 import { WorkCard } from './WorkCard'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/results/Skeleton'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef } from 'react'
 
