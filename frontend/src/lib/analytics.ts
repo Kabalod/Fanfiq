@@ -1,5 +1,7 @@
 // Analytics utilities
-export const trackEvent = (event: string, properties?: Record<string, any>) => {
+type AnalyticsProps = Record<string, unknown>
+
+export const trackEvent = (event: string, properties?: AnalyticsProps) => {
   // Placeholder for analytics tracking
   if (typeof window !== 'undefined') {
     console.log('Analytics event:', event, properties)
@@ -12,6 +14,8 @@ export const trackPageView = (page: string) => {
   trackEvent('page_view', { page })
 }
 
-export const trackUserAction = (action: string, data?: Record<string, any>) => {
+export const trackUserAction = (action: string, data?: AnalyticsProps) => {
   trackEvent('user_action', { action, ...data })
 }
+
+export const track = (name: string, props?: AnalyticsProps) => trackEvent(name, props)
