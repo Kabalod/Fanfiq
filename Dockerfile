@@ -21,12 +21,15 @@ RUN if [ -f /app/backend/api/requirements.txt ]; then \
         echo "requirements.txt not found" && exit 1 ; \
     fi
 
+# Убедимся, что structlog установлен
+RUN pip install --no-cache-dir structlog==25.4.0
+
 # 6. Expose API port
-EXPOSE 58090
+EXPOSE ${PORT:-8000}
 
 # 7. Start API (expand $PORT on Railway)
 WORKDIR /app
-CMD ["sh", "-lc", "python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-58090}"]
+CMD ["sh", "-c", "python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
 
 
 
