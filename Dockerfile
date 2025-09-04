@@ -2,7 +2,7 @@
 FROM python:3.12.0-slim
 
 # Force complete cache bust
-ENV CACHE_BUSTER_ROOT_LEVEL=20250104_083000
+ENV CACHE_BUSTER_ROOT_LEVEL=20250104_084000
 RUN echo "Root level build: $CACHE_BUSTER_ROOT_LEVEL"
 
 # Install system dependencies
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     curl \
     python3-setuptools \
+    python3-distutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
