@@ -1,6 +1,8 @@
 'use client'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
