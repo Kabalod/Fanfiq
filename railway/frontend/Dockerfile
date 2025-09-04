@@ -5,13 +5,13 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY ../../frontend/package*.json ./
+COPY frontend/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
-COPY ../../frontend/ .
+COPY frontend/ .
 
 # Build application
 RUN npm run build
