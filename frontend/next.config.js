@@ -4,19 +4,15 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
   },
-}
+  // Bundle analyzer только для development
+  ...(process.env.ANALYZE === 'true' && {
+    webpack: (config, { isServer }) => {
+      if (!isServer) {
+        // Можно добавить дополнительные webpack настройки здесь
+      }
+      return config;
+    },
+  }),
+};
 
-// Only use bundle analyzer in development/analysis mode
-if (process.env.ANALYZE === 'true') {
-  try {
-    const withBundleAnalyzer = require('@next/bundle-analyzer')({
-      enabled: true,
-    })
-    module.exports = withBundleAnalyzer(nextConfig)
-  } catch (error) {
-    console.warn('Bundle analyzer not available, skipping...')
-    module.exports = nextConfig
-  }
-} else {
-  module.exports = nextConfig
-}
+module.exports = nextConfig;
