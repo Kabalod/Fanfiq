@@ -1,5 +1,5 @@
-# 1. Base Image
-FROM python:3.11-slim
+# Railway Fanfiq API - Build v3
+FROM python:3.11.13-slim
 
 # 2. Set Working Directory
 WORKDIR /app
