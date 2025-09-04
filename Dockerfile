@@ -1,5 +1,9 @@
-# Fanfiq API - Fresh Build v6 - No Cache
+# Railway API Service - Root level paths v8
 FROM python:3.12.0-slim
+
+# Force complete cache bust
+ENV CACHE_BUSTER_ROOT_LEVEL=20250104_082000
+RUN echo "Root level build: $CACHE_BUSTER_ROOT_LEVEL"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -7,40 +11,40 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     curl \
+    python3-setuptools \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app user
+# Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Set working directory
 WORKDIR /app
 
-# Set Python path
-ENV PYTHONPATH="/app"
+# Set environment variables
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Copy requirements first for better caching
+# Copy and install requirements
 COPY backend/api/requirements.txt .
-
-# Install Python dependencies
+RUN pip install --no-cache-dir setuptools
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Ensure structlog is installed
+# Ensure structlog is available
 RUN pip install --no-cache-dir structlog==25.4.0
 
-# Copy application code
+# Copy backend code
 COPY backend/ ./backend/
 
-# Change ownership
+# Set proper permissions
 RUN chown -R appuser:appuser /app
 USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Expose port
 EXPOSE ${PORT:-8000}
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT:-8000}/health')" || exit 1
-
-# Start command
-CMD ["sh", "-c", "python -m uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Start application
+CMD ["sh", "-c", "uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
