@@ -2,7 +2,7 @@
 FROM python:3.12.0-slim
 
 # Force complete cache bust
-ENV CACHE_BUSTER_ROOT_LEVEL=20250104_091500
+ENV CACHE_BUSTER_ROOT_LEVEL=20250104_092000
 RUN echo "Root level build: $CACHE_BUSTER_ROOT_LEVEL"
 
 # Install system dependencies
