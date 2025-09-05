@@ -18,4 +18,5 @@ cd /app
 
 # Start Uvicorn server
 echo "Starting Uvicorn server..."
-uvicorn backend.api.app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+PORT=${PORT:-8000}
+uvicorn backend.api.app.main:app --host 0.0.0.0 --port $PORT
