@@ -29,6 +29,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
 USER nextjs
-EXPOSE ${PORT:-3000}
+EXPOSE $PORT
+ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
 CMD ["npm", "start"]
