@@ -18,6 +18,10 @@ cd /app
 
 # Start Uvicorn server
 echo "Starting Uvicorn server..."
-PORT=${PORT:-8000}
+echo "PORT variable: $PORT"
+if [ -z "$PORT" ]; then
+    echo "ERROR: PORT variable is not set!"
+    exit 1
+fi
 echo "Using port: $PORT"
 exec uvicorn backend.api.app.main:app --host 0.0.0.0 --port "$PORT"
