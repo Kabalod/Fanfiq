@@ -3,40 +3,8 @@
 import { useEffect, useState } from 'react'
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
-  const [mockingEnabled, setMockingEnabled] = useState(false)
-
-  useEffect(() => {
-    const initMocks = async () => {
-      if (typeof window !== 'undefined') {
-        const isDevelopment = process.env.NODE_ENV === 'development'
-        const isMockingEnabledInDev = localStorage.getItem('msw-enabled') === 'true'
-
-        // Включаем моки в development режиме автоматически
-        // В production режиме моки НЕ используем - работаем с реальным API
-        const shouldEnableMocks = isDevelopment
-
-        if (shouldEnableMocks) {
-          try {
-            const { worker } = await import('@/mocks/browser')
-            await worker.start({
-              onUnhandledRequest: 'bypass',
-              serviceWorker: {
-                url: '/mockServiceWorker.js'
-              }
-            })
-            setMockingEnabled(true)
-            console.log('🔧 MSW моки активированы (development режим)')
-          } catch (error) {
-            console.error('❌ Ошибка при инициализации MSW:', error)
-          }
-        } else {
-          console.log('📡 Работа с реальным API (production режим)')
-        }
-      }
-    }
-
-    initMocks()
-  }, [])
+  // MSW полностью отключен - работаем только с API routes
+  console.log('🚫 MSW отключен - используем встроенные API routes')
 
   return <>{children}</>
 }

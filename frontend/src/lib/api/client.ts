@@ -31,8 +31,8 @@ class APIClient {
         } else if (error.request) {
           // Запрос был сделан, но ответ не получен
           console.error('Network Error:', error.message)
-          // В production режиме MSW должен обработать этот запрос
-          console.log('🔄 MSW должен обработать этот запрос')
+          // Теперь используем встроенные API routes Next.js
+          console.log('🔄 Работаем с API routes Next.js')
         } else {
           // Что-то пошло не так при настройке запроса
           console.error('Request Error:', error.message)
