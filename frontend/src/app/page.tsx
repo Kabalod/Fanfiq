@@ -126,9 +126,9 @@ function SearchPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b">
+      <header className="border-b bg-background">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold mb-6">Fanfiq - Поиск фанфиков</h1>
+          <h1 className="text-3xl font-bold mb-6 text-foreground">Fanfiq - Поиск фанфиков</h1>
 
           {/* Search and Filters Toggle */}
           <div className="space-y-4">
@@ -152,7 +152,7 @@ function SearchPage() {
 
             {/* Filter Panel */}
             {showFilters && (
-              <div className="max-w-4xl">
+              <div className="max-w-4xl bg-card border rounded-lg p-4">
                 <FilterPanel
                   filters={filters}
                   onFiltersChange={setFilters}

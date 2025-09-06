@@ -20,6 +20,9 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
             const { worker } = await import('@/mocks/browser')
             await worker.start({
               onUnhandledRequest: 'bypass',
+              serviceWorker: {
+                url: '/mockServiceWorker.js'
+              }
             })
             setMockingEnabled(true)
             console.log('🔧 MSW моки активированы (development режим)')
