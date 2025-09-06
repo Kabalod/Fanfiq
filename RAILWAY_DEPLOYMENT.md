@@ -95,7 +95,7 @@ Railway создаст отдельные сервисы для каждой п�
 
 2. **Environment Variables:**
    ```
-   NEXT_PUBLIC_API_URL=https://${{api.RAILWAY_STATIC_URL}}
+   NEXT_PUBLIC_API_URL=${{api.RAILWAY_STATIC_URL}}
    PORT=${{PORT}}
    NODE_ENV=production
    ```
