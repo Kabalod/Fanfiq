@@ -7,16 +7,24 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initMocks = async () => {
-      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-        const isMockingEnabled = localStorage.getItem('msw-enabled') === 'true'
-        
-        if (isMockingEnabled) {
-          const { worker } = await import('@/mocks/browser')
-          await worker.start({
-            onUnhandledRequest: 'bypass',
-          })
-          setMockingEnabled(true)
-          console.log('🔧 MSW моки активированы')
+      if (typeof window !== 'undefined') {
+        // Включаем моки в development режиме, если явно указано в localStorage
+        // В production режиме включаем моки всегда для работы без базы данных
+        const isDevelopment = process.env.NODE_ENV === 'development'
+        const isMockingEnabledInDev = localStorage.getItem('msw-enabled') === 'true'
+        const shouldEnableMocks = !isDevelopment || isMockingEnabledInDev
+
+        if (shouldEnableMocks) {
+          try {
+            const { worker } = await import('@/mocks/browser')
+            await worker.start({
+              onUnhandledRequest: 'bypass',
+            })
+            setMockingEnabled(true)
+            console.log('🔧 MSW моки активированы')
+          } catch (error) {
+            console.error('❌ Ошибка при инициализации MSW:', error)
+          }
         }
       }
     }

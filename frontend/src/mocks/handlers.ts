@@ -225,7 +225,63 @@ export const handlers = [
   // Получение поддерживаемых сайтов
   http.get('/api/v1/sites', () => {
     return HttpResponse.json({
-      sites: ['ficbook', 'authortoday']
+      sites: ['ficbook', 'authortoday', 'ao3', 'fanficsme', 'litnet']
     })
+  }),
+
+  // Автодополнение тегов
+  http.get('/api/v1/autocomplete/tags', ({ request }) => {
+    const url = new URL(request.url)
+    const query = url.searchParams.get('q') || ''
+
+    const mockTags = [
+      'Романтика', 'Драма', 'Ангст', 'Флафф', 'AU', 'Hurt/Comfort',
+      'Фэнтези', 'Sci-Fi', 'Мистерия', 'Приключения', 'Юмор'
+    ]
+
+    const filteredTags = mockTags.filter(tag =>
+      tag.toLowerCase().includes(query.toLowerCase())
+    )
+
+    return HttpResponse.json({
+      tags: filteredTags.slice(0, 10)
+    })
+  }),
+
+  // Автодополнение фандомов
+  http.get('/api/v1/autocomplete/fandoms', ({ request }) => {
+    const url = new URL(request.url)
+    const query = url.searchParams.get('q') || ''
+
+    const mockFandoms = [
+      'Гарри Поттер', 'Наруто', 'Шерлок BBC', 'Marvel', 'DC Comics',
+      'Звездные войны', 'Игра престолов', 'Доктор Кто', 'Супер натурал'
+    ]
+
+    const filteredFandoms = mockFandoms.filter(fandom =>
+      fandom.toLowerCase().includes(query.toLowerCase())
+    )
+
+    return HttpResponse.json({
+      fandoms: filteredFandoms.slice(0, 10)
+    })
+  }),
+
+  // Получение автора по ID
+  http.get('/api/v1/authors/:id', ({ params }) => {
+    const { id } = params
+
+    const mockAuthor = {
+      id: id as string,
+      name: `Автор ${id}`,
+      url: `https://ficbook.net/authors/${id}`,
+      works_count: Math.floor(Math.random() * 50) + 1,
+      followers_count: Math.floor(Math.random() * 1000),
+      description: `Это описание автора ${id}. Здесь может быть биография, интересы и другая информация.`,
+      created_at: new Date(2020, 0, 1).toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    return HttpResponse.json(mockAuthor)
   })
 ]

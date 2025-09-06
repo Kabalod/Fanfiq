@@ -8,6 +8,10 @@
 - **frontend** - Next.js веб-приложение
 - **workers** - Celery воркеры для фоновых задач
 - **parsers-ficbook** - Парсер для Ficbook
+- **parsers-authortoday** - Парсер для Author.today
+- **parsers-ao3** - Парсер для Archive of Our Own
+- **parsers-fanficsme** - Парсер для Fanfics.me
+- **parsers-litnet** - Парсер для Litnet
 
 Каждый сервис имеет свою папку в `railway/` с Dockerfile.
 
@@ -32,6 +36,14 @@ railway/
 ├── workers/
 │   └── Dockerfile
 ├── parsers-ficbook/
+│   └── Dockerfile
+├── parsers-authortoday/
+│   └── Dockerfile
+├── parsers-ao3/
+│   └── Dockerfile
+├── parsers-fanficsme/
+│   └── Dockerfile
+├── parsers-litnet/
 │   └── Dockerfile
 ├── docker-compose.prod.yml
 └── production-env-example
@@ -112,24 +124,37 @@ Railway создаст отдельные сервисы для каждой п�
    celery -A backend.workers.celery_app worker -Q crawl,normalize -l info --concurrency 2
    ```
 
-#### Parsers Service (`railway/parsers-ficbook/`)
+#### Parsers Services
 
-1. **Service Settings:**
-   - Root Directory: `railway/parsers-ficbook`
-   - Dockerfile Path: `Dockerfile`
+Для каждого парсера настройте отдельный сервис:
 
-2. **Environment Variables:**
-   ```
-   DATABASE_URL=${{Postgres.DATABASE_URL}}
-   REDIS_URL=${{Redis.REDIS_URL}}
-   PREFECT_API_URL=your-prefect-api-url
-   PYTHONPATH=/app
-   ```
+**parsers-ficbook** (`railway/parsers-ficbook/`):
+- Root Directory: `railway/parsers-ficbook`
+- Start Command: `prefect worker start --pool ficbook-pool`
 
-3. **Start Command:**
-   ```
-   prefect worker start --pool ficbook-pool
-   ```
+**parsers-authortoday** (`railway/parsers-authortoday/`):
+- Root Directory: `railway/parsers-authortoday`
+- Start Command: `prefect worker start --pool authortoday-pool`
+
+**parsers-ao3** (`railway/parsers-ao3/`):
+- Root Directory: `railway/parsers-ao3`
+- Start Command: `prefect worker start --pool ao3-pool`
+
+**parsers-fanficsme** (`railway/parsers-fanficsme/`):
+- Root Directory: `railway/parsers-fanficsme`
+- Start Command: `prefect worker start --pool fanficsme-pool`
+
+**parsers-litnet** (`railway/parsers-litnet/`):
+- Root Directory: `railway/parsers-litnet`
+- Start Command: `prefect worker start --pool litnet-pool`
+
+**Environment Variables для всех парсеров:**
+```
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+REDIS_URL=${{Redis.REDIS_URL}}
+PREFECT_API_URL=your-prefect-api-url
+PYTHONPATH=/app
+```
 
 ### Шаг 4: Настройка базы данных
 

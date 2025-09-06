@@ -1,12 +1,13 @@
 import axios, { AxiosInstance } from 'axios'
-import { 
-  SearchFilters, 
-  SearchResponse, 
+import {
+  SearchFilters,
+  SearchResponse,
   SearchResponseSchema,
   Work,
   WorkSchema,
   Chapter,
-  ChapterSchema
+  ChapterSchema,
+  AuthorDetail
 } from './schemas'
 
 class APIClient {
@@ -30,6 +31,8 @@ class APIClient {
         } else if (error.request) {
           // Запрос был сделан, но ответ не получен
           console.error('Network Error:', error.message)
+          // В production режиме MSW должен обработать этот запрос
+          console.log('🔄 MSW должен обработать этот запрос')
         } else {
           // Что-то пошло не так при настройке запроса
           console.error('Request Error:', error.message)
@@ -72,6 +75,28 @@ class APIClient {
   // Получить поддерживаемые сайты
   async getSupportedSites(): Promise<{ sites: string[] }> {
     const response = await this.client.get('/api/v1/sites')
+    return response.data
+  }
+
+  // Получить теги для автодополнения
+  async getTags(query: string): Promise<string[]> {
+    const response = await this.client.get('/api/v1/autocomplete/tags', {
+      params: { q: query }
+    })
+    return response.data.tags || []
+  }
+
+  // Получить фандомы для автодополнения
+  async getFandoms(query: string): Promise<string[]> {
+    const response = await this.client.get('/api/v1/autocomplete/fandoms', {
+      params: { q: query }
+    })
+    return response.data.fandoms || []
+  }
+
+  // Получить детали автора
+  async getAuthor(authorId: string): Promise<AuthorDetail> {
+    const response = await this.client.get(`/api/v1/authors/${authorId}`)
     return response.data
   }
 }
