@@ -11,9 +11,9 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
         const isDevelopment = process.env.NODE_ENV === 'development'
         const isMockingEnabledInDev = localStorage.getItem('msw-enabled') === 'true'
 
-        // Включаем моки только в development режиме, если явно указано в localStorage
+        // Включаем моки в development режиме автоматически
         // В production режиме моки НЕ используем - работаем с реальным API
-        const shouldEnableMocks = isDevelopment && isMockingEnabledInDev
+        const shouldEnableMocks = isDevelopment
 
         if (shouldEnableMocks) {
           try {

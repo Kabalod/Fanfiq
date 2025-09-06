@@ -146,16 +146,16 @@ export function FilterPanel({
         <div>
           <Label>Категория</Label>
           <Select
-            value={filters.category?.[0] || ''}
+            value={filters.category?.[0] || 'any'}
             onValueChange={(value) =>
-              onFiltersChange({ ...filters, category: value ? [value] : [] })
+              onFiltersChange({ ...filters, category: value && value !== 'any' ? [value] : [] })
             }
           >
             <SelectTrigger>
               <SelectValue placeholder="Любая" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Любая</SelectItem>
+              <SelectItem value="any">Любая</SelectItem>
               {categoryOptions.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
