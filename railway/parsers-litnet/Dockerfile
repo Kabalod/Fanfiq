@@ -16,17 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first
-COPY ../../backend/api/requirements.txt .
-COPY ../../parsers/litnet/requirements.txt ./parsers-litnet-requirements.txt
+COPY requirements.txt .
+COPY requirements.txt ./parsers-litnet-requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -r parsers-litnet-requirements.txt
 
 # Copy necessary code
-COPY ../../backend/parsers/schemas.py ./backend/parsers/schemas.py
-COPY ../../backend/api/db ./backend/api/db
-COPY ../../parsers/litnet ./parsers/litnet
+COPY schemas.py ./backend/parsers/schemas.py
+COPY db ./backend/api/db
+COPY litnet ./parsers/litnet
 
 # Create non-root user
 RUN groupadd -r parser && useradd -r -g parser parser

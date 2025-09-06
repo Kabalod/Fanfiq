@@ -17,14 +17,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy backend requirements first
-COPY ../../backend/api/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy workers code
-COPY ../../workers/ ./workers/
-COPY ../../backend/ ./backend/
+COPY workers/ ./workers/
+COPY backend/ ./backend/
 
 # Create non-root user
 RUN groupadd -r worker && useradd -r -g worker worker

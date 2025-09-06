@@ -16,17 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first
-COPY ../../backend/api/requirements.txt .
-COPY ../../parsers/authortoday/requirements.txt ./parsers-authortoday-requirements.txt
+COPY requirements.txt .
+COPY requirements.txt ./parsers-authortoday-requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -r parsers-authortoday-requirements.txt
 
 # Copy necessary code
-COPY ../../backend/parsers/schemas.py ./backend/parsers/schemas.py
-COPY ../../backend/api/db ./backend/api/db
-COPY ../../parsers/authortoday ./parsers/authortoday
+COPY schemas.py ./backend/parsers/schemas.py
+COPY db ./backend/api/db
+COPY authortoday ./parsers/authortoday
 
 # Create non-root user
 RUN groupadd -r parser && useradd -r -g parser parser

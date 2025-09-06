@@ -16,17 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first
-COPY ../../backend/api/requirements.txt .
-COPY ../../parsers/ficbook/requirements.txt ./parsers-ficbook-requirements.txt
+COPY requirements.txt .
+COPY requirements.txt ./parsers-ficbook-requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -r parsers-ficbook-requirements.txt
 
 # Copy necessary code
-COPY ../../backend/parsers/schemas.py ./backend/parsers/schemas.py
-COPY ../../backend/api/db ./backend/api/db
-COPY ../../parsers/ficbook ./parsers/ficbook
+COPY schemas.py ./backend/parsers/schemas.py
+COPY db ./backend/api/db
+COPY ficbook ./parsers/ficbook
 
 # Create non-root user
 RUN groupadd -r parser && useradd -r -g parser parser
