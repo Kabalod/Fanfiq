@@ -3,16 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY frontend/package*.json ./
+COPY package*.json ./
+RUN npm ci || npm install
 
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY frontend/ .
-
-# Build application
+COPY . .
 RUN npm run build
 
 # Production stage
@@ -32,3 +26,5 @@ USER nextjs
 EXPOSE ${PORT:-3000}
 ENV HOSTNAME="0.0.0.0"
 CMD ["npm", "start"]
+
+
