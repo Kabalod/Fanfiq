@@ -12,7 +12,14 @@ import os
 import re
 import time
 import requests
-from .schemas import ParsedWork
+from backend.parsers.schemas import ParsedWork
+
+
+STATUS_MAP = {
+    "завершён": "completed",
+    "в процессе": "in_progress",
+    "заморожен": "frozen",
+}
 
 
 def extract_text(el):
@@ -72,7 +79,8 @@ def parse_ficbook_html(html: str, url: str) -> Dict[str, Any]:
     summary = extract_text(soup.select_one(".summary, .annotation, .work-description"))
 
     rating = parse_meta_dd(soup, "Рейтинг")
-    status = parse_meta_dd(soup, "Статус") or "In Progress"
+    raw_status = parse_meta_dd(soup, "Статус")
+    status = STATUS_MAP.get(raw_status.lower(), "in_progress")
     size_text = parse_meta_dd(soup, "Размер")
     word_count = 0
     if size_text:
