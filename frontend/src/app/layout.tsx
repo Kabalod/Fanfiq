@@ -1,4 +1,12 @@
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { Providers } from "@/lib/providers"
+import { GlobalHeader } from "@/components/layout/GlobalHeader"
+
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+})
 
 export const metadata: Metadata = {
   title: "Fanfiq - Поиск фанфиков",
@@ -11,9 +19,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ru">
-      <body>
-        {children}
+    <html lang="ru" suppressHydrationWarning>
+      <body className={inter.className}>
+        <Providers>
+          <GlobalHeader />
+          {children}
+        </Providers>
       </body>
     </html>
   )
