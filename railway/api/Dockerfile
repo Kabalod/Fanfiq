@@ -26,7 +26,7 @@ ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
 # Copy and install requirements
-COPY ../../backend/api/requirements.txt .
+COPY requirements.txt .
 
 # Install requirements (without problematic prefect/pendulum)
 RUN pip install --no-cache-dir -r requirements.txt
@@ -35,8 +35,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir structlog==25.4.0
 
 # Copy backend code
-COPY ../../backend/ ./backend/
-COPY ../../run.sh .
+COPY backend/ ./backend/
+COPY run.sh .
 
 # Set proper permissions
 RUN chmod +x run.sh
